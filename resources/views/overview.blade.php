@@ -15,7 +15,6 @@
 
 <body>
     @include('components.navbar')
-
     <section class="container mt-5">
         <div class="row">
             <!-- USPU Score Section -->
