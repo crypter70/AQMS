@@ -15,8 +15,6 @@
 
 <body>
     <style>
-      
-
 
     </style>
     @include('components.navbar')
