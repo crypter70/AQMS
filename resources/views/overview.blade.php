@@ -14,40 +14,52 @@
 </head>
 
 <body>
-    <style>
-
-    </style>
     @include('components.navbar')
     <section class="container mt-5">
         <div class="row">
             <!-- ISPU Score Section -->
             <div class="col-lg-8">
-    <section class="custom-section">
-        <div>
-            <h2 class="section-title">ISPU Score</h2>
+            <section class="ispu-score">
+            <div>
+            <h2 class="section-title-ispu">ISPU Score  <i class="fa-solid fa-circle-info"></i></h2>
+            <p class="card-text"><i class="fa-solid fa-location-dot"></i><span id="location">   Gegerkalong Girang</p>
+            <p class="card-text"><i class="fa-solid fa-calendar-days"></i><span id="date-time">   04/06/2024<span>, 13.55</span></p>
         </div>
-        <div class="card-container">
+        <div class="card-container mt-3">
             <div class="card">
                 <h3>PM2.5</h3>
-                <p>Penjelasan tentang skor parameter ISPU untuk PM2.5.</p>
+                <h2>80</h2>
+                <p>Moderate</p>
             </div>
             <div class="card">
                 <h3>PM10</h3>
-                <p>Penjelasan tentang skor parameter ISPU untuk PM10.</p>
+                <h2>80</h2>
+                <p>Moderate</p>
             </div>
             <div class="card">
                 <h3>CO</h3>
-                <p>Penjelasan tentang skor parameter ISPU untuk CO.</p>
+                <h2>80</h2>
+                <p>Moderate</p>
             </div>
         </div>
     </section>
-</div>
+    </div>
 
-            <!-- Card Section -->
+            <!-- AVG ISPU Score Section -->
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Avg ISPU Score</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            PM2.5 
+                            </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">PM2.5</a></li>
+                                    <li><a class="dropdown-item" href="#">PM10</a></li>
+                                    <li><a class="dropdown-item" href="#">CO</a></li>
+                                </ul>
+                        </div>
                         <canvas id="pm25Chart" width="400" height="200"></canvas>
                         <p class="card-text">Bandung</p>
                     </div>
@@ -118,7 +130,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Tekanan Udara</h5>
-                        <p class="card-text"><span id="pressure-value">35.7</span>%</p>
+                        <p class="card-text"><span id="pressure-value">35.7</span>hPa</p>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,108 @@
+:root {
+    --navy: #164863;
+    --white: #fff;
+    --blue: #0111FF;
+    --softgray: #F3F5F7;
+    --softgray2: #CCD8E1;
+    --gray: #727379;
+    --fwbold: 700;
+    --fwextrabold: 800;
+    --fwsemibold: 600;
+    --fwmedium: 500;
+    --fwregular: 400;
+    --fwlight: 300;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+header {
+    background-color: #fff;
+    padding: 10px 0;
+}
+
+.navbar {
+    padding: 30px 0 30px 0;
+    font-size: 18px;
+}
+
+.navbar-nav .nav-item {
+    padding: 0 16px 0 16px;
+    
+}
+
+.navbar-nav .nav-link {
+    color: var(--navy);
+}
+
+.navbar-nav .nav-item .active {
+    color: var(--navy);
+    font-weight: var(--fwbold);
+}
+
+.navbar .nav-icons {
+    display: flex;
+    align-items: center;
+    
+}
+.navbar .nav-icons .nav-icon {
+    margin-left: 16px;
+    font-size: 1.2em;
+    color: var(--navy);
+}
+.hero {
+    background: url('hero-image.jpg') no-repeat center center/cover;
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.hero h1 {
+    font-size: 3em;
+    margin: 0;
+}
+
+.hero p {
+    font-size: 1.5em;
+}
+
+.content-section {
+    padding: 20px;
+    background-color: #fff;
+}
+
+.content-section h2 {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.info-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.info-card h3 {
+    font-size: 1.5em;
+    margin-top: 0;
+}
+
+.info-card p,
+.info-card ul {
+    font-size: 1em;
+    color: #333;
+}
+
+.info-card ul {
+    padding-left: 20px;
+}
