@@ -2,6 +2,7 @@
 *paper
 *-checkpoint.ipynb
 dataset_pacmann*
+LSTM/__pycache__
 /aqms-env
 /.phpunit.cache
 /node_modules
