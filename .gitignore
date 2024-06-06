@@ -2,6 +2,7 @@
 *paper
 *-checkpoint.ipynb
 dataset_pacmann*
+/aqms-env
 /.phpunit.cache
 /node_modules
 /public/build
