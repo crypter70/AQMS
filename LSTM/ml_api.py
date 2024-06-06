@@ -1,11 +1,16 @@
 import numpy as np
-from flask import Flask, request, jsonify
-import torch
-import torch.nn as nn
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-class LSTMModel(nn.Module):
+import torch
+import torch.nn as nn
+from typing import List
 
+app = FastAPI()
+
+# deklarasi kelas LSTM untuk model LSTM
+class LSTMModel(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers): 
         super(LSTMModel, self).__init__()
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
@@ -15,65 +20,66 @@ class LSTMModel(nn.Module):
         out, _ = self.lstm(x)
         out = self.linear(out)
         return out
-    
 
-app = Flask(__name__)
+# deklarasi kelas Data
+class Data(BaseModel):
+    data: List[float]   
 
+# aktivasi device implementasi model, mps untuk GPU Mac OS, dan cuda untuk GPU Windows OS
 if torch.backends.mps.is_available():
     device = torch.device("mps")
+elif torch.cuda.is_available():
+    device = torch.device("cuda")
 else:
     device = torch.device("cpu")
 
-print(device)
-
-
+# deklarasi model dengan parameter dan laod model LSTM pada file lokal
 model = LSTMModel(input_size=1, hidden_size=64, num_layers=2).to(device)
 model.load_state_dict(torch.load('lstm_model.pth'))
+
+# ubah ke mode evaluasi
 model.eval()
 
 scaler = StandardScaler()
 
-# new_data = np.reshape(new_data, (-1,1))
-# scaled_new_data = scaler.fit_transform(new_data)
-# scaled_new_data = torch.tensor(scaled_new_data, dtype=torch.float32)
 
+@app.get("/")
+def home():
+    return {"ml_api_check": "OK"}
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+# method untuk prediksi
+@app.post("/predict")
+async def predict(aqms_data: Data):
+    try:
+        data = preprocessing(aqms_data.data)
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    # Get JSON data from request
-    data = request.get_json()
-    
-    # Convert data to tensor
-    sequence = np.array(data['sequence'])
-    sequence = sequence.reshape(1, -1, 1)  # Reshape to (batch_size, time_step, input_dim)
-    sequence = scaler.fit_transform(sequence)
-    sequence_tensor = torch.tensor(sequence, dtype=torch.float32).to(device)
-    
-    # Make prediction
-    with torch.no_grad():
-        prediction = model(sequence_tensor)
-    
-    # Convert prediction to list and return as JSON
-    predicted_value = prediction.cpu().numpy().tolist()
-    return jsonify({'predicted_value': predicted_value[0][0]})
+        # disable komputasi gradien 
+        with torch.no_grad():
 
-# def predict(model, data):
-    
-#     model.eval()
-#     with torch.no_grad():
-#         data = data.to(device)
+            # pindahkan data ke CPU atau GPU
+            data = data.to(device)
+            
+            # lakukan prediksi, detach dari komputasi, pindahkan data ke CPU, convert ke numpy array, dan inverse scaling hasil prediksi
+            predicted_value = model(data).detach().cpu().numpy()
+            predicted_value = scaler.inverse_transform(predicted_value.reshape(-1,1))  
         
-#         predicted_value = model(data).detach().cpu().numpy()
-#         predicted_value = scaler.inverse_transform(predicted_value.reshape(-1,1))  
+        # return hasil prediksi untuk 1 data atau 1 hari
+        return {"predicted_value": predicted_value[0].item()}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
     
-#     return predicted_value[0].item()
+# prosedur untuk praproses input data
+def preprocessing(data):
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=4500)
+    # ubah array data menjadi 2D (0, 0), scaling data, dan convert data ke tipe tensor
+    new_data = np.reshape(data, (-1,1))
+    scaled_new_data = scaler.fit_transform(new_data)
+    scaled_new_data = torch.tensor(scaled_new_data, dtype=torch.float32)
 
+    return scaled_new_data
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
