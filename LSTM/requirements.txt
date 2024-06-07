@@ -2,4 +2,4 @@ torch
 fastapi
 numpy
 pydantic
-⁠⁠scikit-learn
+scikit-learn
