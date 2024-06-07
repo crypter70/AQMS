@@ -29,11 +29,11 @@ class LSTMModel(nn.Module):
         out = self.linear(out)
         return out
 
-# deklarasi kelas Data
-class Data(BaseModel):
-    data: List[float]  
+class PredictionRequest(BaseModel):
+    # data: List[float]  
+    data: List[List[float]]
 
-class PredictionData(BaseModel):
+class PredictionResponse(BaseModel):
     predicted_value: List[float]
 
 # deklarasi model dengan parameter dan laod model LSTM pada file lokal
@@ -50,15 +50,15 @@ scaler = StandardScaler()
 def home():
     return {"ml_api_check": "OK"}
 
-# method untuk get data input model
+
 @app.get("/data")
 async def get_data():
     example_data = [1, 2, 3, 4, 5] 
     return {"data": example_data}
 
 # method untuk prediksi
-@app.post("/predict", response_model=PredictionData)
-async def predict(aqms_data: Data):
+@app.post("/predict", response_model=PredictionResponse)
+async def predict(aqms_data: PredictionRequest):
     try:
         data = preprocessing(aqms_data.data)
 
