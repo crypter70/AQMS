@@ -30,15 +30,15 @@ class LSTMModel(nn.Module):
         return out
 
 class PredictionRequest(BaseModel):
-    # data: List[float]  
-    data: List[List[float]]
+    data: List[float]  
 
 class PredictionResponse(BaseModel):
-    predicted_value: List[float]
+    # predicted_value: List[float]
+    predicted_value: float
 
-# deklarasi model dengan parameter dan laod model LSTM pada file lokal
+# deklarasi model dengan parameter dan load model LSTM pada file lokal
 model = LSTMModel(input_size=1, hidden_size=64, num_layers=2).to(device)
-model.load_state_dict(torch.load('lstm_model.pth'))
+model.load_state_dict(torch.load('lstm_model.pth', map_location=device))
 
 # ubah ke mode evaluasi
 model.eval()
@@ -57,6 +57,7 @@ async def get_data():
     return {"data": example_data}
 
 # method untuk prediksi
+# @app.post("/predict")
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(aqms_data: PredictionRequest):
     try:
@@ -73,13 +74,13 @@ async def predict(aqms_data: PredictionRequest):
             predicted_value = scaler.inverse_transform(predicted_value.reshape(-1,1))  
         
         # return hasil prediksi untuk 1 data atau 1 hari
-        # return {"predicted_value": predicted_value[0].item()}
+        return {"predicted_value": predicted_value[0].item()}
 
         # return hasil prediksi untuk 7 data atau 7 hari
-        return {"predicted_value": predicted_value[:7]}
+        # return {"predicted_value": predicted_value[:7]}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 # prosedur untuk praproses input data
 def preprocessing(data):
 
@@ -93,5 +94,3 @@ def preprocessing(data):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
