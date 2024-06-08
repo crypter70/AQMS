@@ -76,7 +76,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">PM1.0</h5>
-                        <p class="card-text"><span id="pm1-value">35.7</span> µg/m³</p>
+                        <p class="card-text"><span id="pm1-value">{{ $data['pm_1_0_level'] }}</span> µg/m³</p>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">PM2.5</h5>
-                        <p class="card-text"><span id="pm25-value">35.7</span> µg/m³</p>
+                        <p class="card-text"><span id="pm25-value">{{ $data['pm_2_5_level'] }}</span> µg/m³</p>
                     </div>
                 </div>
             </div>
@@ -94,7 +94,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">PM10</h5>
-                        <p class="card-text"><span id="pm10-value">35.7</span> µg/m³</p>
+                        <p class="card-text"><span id="pm10-value">{{ $data['pm_10_0_level'] }}</span> µg/m³</p>
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">CO</h5>
-                        <p class="card-text"><span id="co-value">90</span> ppm</p>
+                        <p class="card-text"><span id="co-value">{{ $data['co_level'] }}</span> ppm</p>
                     </div>
                 </div>
             </div>
@@ -112,7 +112,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Suhu</h5>
-                        <p class="card-text"><span id="temperature-value">35.7</span> °C</p>
+                        <p class="card-text"><span id="temperature-value">{{ $data['dht22_temperature'] }}</span> °C</p>
                     </div>
                 </div>
             </div>
@@ -121,7 +121,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Kelembaban</h5>
-                        <p class="card-text"><span id="humidity-value">35.7</span>%</p>
+                        <p class="card-text"><span id="humidity-value">{{ $data['dht22_humidity'] }}</span>%</p>
                     </div>
                 </div>
             </div>
@@ -130,7 +130,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Tekanan Udara</h5>
-                        <p class="card-text"><span id="pressure-value">35.7</span>hPa</p>
+                        <p class="card-text"><span id="pressure-value">{{ $data['bme280_pressure'] }}</span>hPa</p>
                     </div>
                 </div>
             </div>

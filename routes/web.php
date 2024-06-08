@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,8 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('overview');
+Route::get('/', [MainController::class, 'index']);
+
+Route::get('/test-mqtt', function () {
+    return view('test.mqtt');
 });
 
 Route::get('/breathecare', function () {
