@@ -23,3 +23,11 @@ Route::get('/test-mqtt', function () {
 Route::get('/breathecare', function () {
     return view('breathecare');
 });
+
+Route::get('/notification', function () {
+    return view('notification');
+});
+
+Route::get('/faq', function () {
+    return view('faq');
+});
