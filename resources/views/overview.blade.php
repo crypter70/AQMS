@@ -31,13 +31,13 @@
                             ≥ 301   = Hazardous
                             "></i>
                         </h2>
-                        <p class="card-text mb-0"><i class="fa-solid fa-location-dot"></i><span id="location">   Gegerkalong Girang</span></p>
-                        <p class="card-text"><i class="fa-solid fa-calendar-days"></i><span id="date-time">   04/06/2024</span>, 13.55</p>
+                        <p class="card-text mb-0"><i class="fa-solid fa-location-dot"></i><span id="location"> Gegerkalong Girang</span></p>
+                        <p class="card-text"><i class="fa-solid fa-calendar-days"></i><span id="date-time"> 04/06/2024</span>, 13.55</p>
                     </div>
                     <div class="card-container mt-3">
                         <div class="card">
                             <h3>PM2.5</h3>
-                            <h2>80</h2>
+                            <h2>100</h2>
                             <p>Moderate</p>
                         </div>
                         <div class="card">
@@ -62,7 +62,7 @@
                             <h5 class="card-title-ispu-score">Avg ISPU Score</h5>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    PM2.5 
+                                    PM2.5
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="#" data-chart="pm25">PM2.5</a></li>
@@ -96,7 +96,7 @@
             <div class="col-lg-3 mt-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                    <a class="pm1-icon" href="#">
+                        <a class="pm1-icon" href="#">
                             <img src="images/PM1.png" class="mb-3" height="30" alt="">
                         </a>
                         <h5 class="card-title">PM1.0</h5>
@@ -108,7 +108,7 @@
             <div class="col-lg-3 mt-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                    <a class="pm25-icon" href="#">
+                        <a class="pm25-icon" href="#">
                             <img src="images/PM25.png" class="mb-3" height="30" alt="">
                         </a>
                         <h5 class="card-title">PM2.5</h5>
@@ -120,7 +120,7 @@
             <div class="col-lg-3 mt-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                    <a class="pm10-icon" href="#">
+                        <a class="pm10-icon" href="#">
                             <img src="images/PM10.png" class="mb-3" height="30" alt="">
                         </a>
                         <h5 class="card-title">PM10</h5>
@@ -132,7 +132,7 @@
             <div class="col-lg-3 mt-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                    <a class="co-icon" href="#">
+                        <a class="co-icon" href="#">
                             <img src="images/CO.png" class="mb-3" height="30" alt="">
                         </a>
                         <h5 class="card-title">CO</h5>
@@ -156,7 +156,7 @@
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
-                    <a class="humidity-icon" href="#">
+                        <a class="humidity-icon" href="#">
                             <img src="images/humidity1.png" class="mb-3" height="30" alt="">
                         </a>
                         <h5 class="card-title">Humidity</h5>
@@ -168,7 +168,7 @@
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-body">
-                    <a class="pressure-icon" href="#">
+                        <a class="pressure-icon" href="#">
                             <img src="images/pressure1.png" class="mb-3" height="30" alt="">
                         </a>
                         <h5 class="card-title">Pressure</h5>
@@ -180,21 +180,21 @@
     </section>
 
     <section class="container mt-5 mb-5">
-    <h4 class="section-title-out mt-4 mb-4">Air Quality Forecast</h4>
+        <h4 class="section-title-out mt-4 mb-4">Air Quality Forecast</h4>
         <div class="row">
             <div class="col-md-12">
-            <div class="card">
+                <div class="card">
                     <div class="card-body">
                         <canvas id="airQualityForecastChart" width="400" height="200"></canvas>
                     </div>
                 </div>
-        </div>        
-</section>
+            </div>
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('chartCanvas').getContext('2d');
             let chart = new Chart(ctx, {
                 type: 'bar',
@@ -298,7 +298,7 @@
                 }
             });
         });
-</script>
+    </script>
 </body>
 
 </html>

@@ -20,6 +20,10 @@ Route::get('/test-mqtt', function () {
     return view('test.mqtt');
 });
 
+Route::get('/airmap', function () {
+    return view('airmap');
+});
+
 Route::get('/breathecare', function () {
     return view('breathecare');
 });
