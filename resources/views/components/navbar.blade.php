@@ -6,7 +6,6 @@
         align-items: center;
         justify-content: space-between;
         padding: 0 20px;
-        /* Sesuaikan padding sesuai kebutuhan */
     }
 
     .nav-icon {
@@ -19,32 +18,25 @@
     .nav-icon i,
     .nav-icon img {
         font-size: 24px;
-        /* Atur ukuran font/icon */
         width: 24px;
-        /* Atur ukuran gambar */
         height: 24px;
-        /* Atur ukuran gambar */
         vertical-align: middle;
     }
 
     .notification-badge {
         position: absolute;
         top: -5px;
-        /* Sesuaikan posisi vertikal badge */
         right: -5px;
-        /* Sesuaikan posisi horizontal badge */
         background-color: red;
         color: white;
         border-radius: 50%;
         padding: 2px 6px;
         font-size: 12px;
         z-index: 2;
-        /* Pastikan badge berada di atas elemen lainnya */
     }
 
     .dropdown-menu {
-        width: 300px;
-        /* Atur lebar dropdown */
+        width: 500px;
     }
 
     .dropdown-header {
@@ -141,13 +133,7 @@
                         </li>
                     </ul>
                 </div>
-                <!-- <a href="/settings" class="nav-icon {{ Request::is('settings') ? 'active' : '' }}">
-                    @if(Request::is('settings'))
-                    <img src="images/settings-fill.png" alt="Settings Icon">
-                    @else
-                    <i class="fa-solid fa-gear"></i>
-                    @endif
-                </a> -->
+
                 <a href="/faq" class="nav-icon {{ Request::is('faq') ? 'active' : '' }}">
                     @if(Request::is('faq'))
                     <img src="images/info-fill.png" alt="FAQ Icon">

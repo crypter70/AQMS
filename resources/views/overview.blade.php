@@ -31,24 +31,30 @@
                             ≥ 301   = Hazardous
                             "></i>
                         </h2>
-                        <p class="card-text mb-0"><i class="fa-solid fa-location-dot"></i><span id="location"> Gegerkalong Girang</span></p>
-                        <p class="card-text"><i class="fa-solid fa-calendar-days"></i><span id="date-time"> 04/06/2024</span>, 13.55</p>
+                        <p class="card-text mb-0"><i class="fa-solid fa-location-dot"></i>
+                            <select id="location" onchange="selectLocation()" class="transparent-background">
+                                <option value="Gegerkalong Girang" href="#">FPTK UPI, Setiabudi</option>
+                                <option value="KRU House" href="#">KRU House, Buah Batu</option>
+                                <option value="Masjid Al Muslim" href="#">Masjid Al Muslim, Cibeunying</option>
+                            </select>
+                        </p>
+                        <p class="card-text"><i class="fa-solid fa-calendar-days"></i> <span id="date-time">{{ $data['time_captured'] }}</spa></p>
                     </div>
                     <div class="card-container mt-3">
-                        <div class="card">
+                        <div class="card" id="pm25-ispu-card">
                             <h3>PM2.5</h3>
-                            <h2>100</h2>
-                            <p>Moderate</p>
+                            <h2 id="pm25-ispu-value">200</h2>
+                            <p id="pm25-category"></p>
                         </div>
-                        <div class="card">
+                        <div class="card" id="pm10-ispu-card">
                             <h3>PM10</h3>
-                            <h2>80</h2>
-                            <p>Moderate</p>
+                            <h2 id="pm10-ispu-value">96</h2>
+                            <p id="pm10-category"></p>
                         </div>
-                        <div class="card">
+                        <div class="card" id="co-ispu-card">
                             <h3>CO</h3>
-                            <h2>80</h2>
-                            <p>Moderate</p>
+                            <h2 id="co-ispu-value">20</h2>
+                            <p id="co-category"></p>
                         </div>
                     </div>
                 </section>
@@ -65,7 +71,7 @@
                                     PM2.5
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" data-chart="pm25">PM2.5</a></li>
+                                    <li><a class="dropdown-item" href="#" data-chart="pm2.5">PM2.5</a></li>
                                     <li><a class="dropdown-item" href="#" data-chart="pm10">PM10</a></li>
                                     <li><a class="dropdown-item" href="#" data-chart="co">CO</a></li>
                                 </ul>
@@ -81,16 +87,6 @@
 
     <section class="container mt-5">
         <h4 class="section-title-out">Today's Highlights</h4>
-        <!-- <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Location 
-            </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">KRU House, Buah Batu</a></li>
-                    <li><a class="dropdown-item" href="#">FPTK UPI Setiabudi</a></li>
-                    <li><a class="dropdown-item" href="#">Masjid Al Muslim, Cibeunying</a></li>
-                </ul>
-        </div> -->
         <div class="row">
             <!-- PM1.0 -->
             <div class="col-lg-3 mt-4 mb-4">
@@ -196,12 +192,51 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('chartCanvas').getContext('2d');
+            const ctxForecast = document.getElementById('airQualityForecastChart').getContext('2d');
+
+            // Fungsi untuk memperbarui kategori berdasarkan nilai ISPU
+            function getCategory(value, type) {
+                if (type === 'PM2.5' || type === 'PM10') {
+                    if (value >= 1 && value <= 50) {
+                        return 'Good';
+                    } else if (value >= 51 && value <= 100) {
+                        return 'Moderate';
+                    } else if (value >= 101 && value <= 200) {
+                        return 'Unhealthy';
+                    } else if (value >= 201 && value <= 300) {
+                        return 'Unhealthy for All';
+                    } else if (value > 300) {
+                        return 'Hazardous';
+                    }
+                } else if (type === 'CO') {
+                    if (value >= 1 && value <= 50) {
+                        return 'Good';
+                    } else if (value >= 51 && value <= 100) {
+                        return 'Moderate';
+                    } else if (value >= 101 && value <= 150) {
+                        return 'Unhealthy';
+                    } else if (value >= 151 && value <= 200) {
+                        return 'Very Unhealthy';
+                    } else if (value > 200) {
+                        return 'Hazardous';
+                    }
+                }
+                return 'Invalid';
+            }
+
+            function updateCategory(elementId, value, type) {
+                const categoryElement = document.getElementById(elementId);
+                const category = getCategory(value, type);
+                categoryElement.textContent = category;
+            }
+
+            // Inisialisasi chart pertama (Bar chart)
             let chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['W1', 'W2', 'W3', 'W4'],
                     datasets: [{
-                        label: 'PM2.5 Labels',
+                        label: 'PM2.5',
                         data: [10, 60, 80, 75],
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
@@ -217,15 +252,7 @@
                 }
             });
 
-            document.querySelectorAll('.dropdown-item').forEach(item => {
-                item.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const chartType = this.dataset.chart;
-                    updateChart(chart, chartType);
-                    document.querySelector('.dropdown-toggle').textContent = this.textContent;
-                });
-            });
-
+            // Fungsi untuk memperbarui data chart
             function updateChart(chart, type) {
                 const dataSets = {
                     pm25: [10, 60, 80, 75],
@@ -238,8 +265,26 @@
                 chart.update();
             }
 
-            // forecast chart
-            const ctxForecast = document.getElementById('airQualityForecastChart').getContext('2d');
+            // Event listener untuk dropdown
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const chartType = this.dataset.chart;
+                    updateChart(chart, chartType);
+                    document.querySelector('.dropdown-toggle').textContent = this.textContent;
+                });
+            });
+
+            // Perbarui kategori ISPU berdasarkan nilai
+            const pm25Value = parseInt(document.getElementById('pm25-ispu-value').textContent);
+            const pm10Value = parseInt(document.getElementById('pm10-ispu-value').textContent);
+            const coValue = parseInt(document.getElementById('co-ispu-value').textContent);
+
+            updateCategory('pm25-category', pm25Value, 'PM2.5');
+            updateCategory('pm10-category', pm10Value, 'PM10');
+            updateCategory('co-category', coValue, 'CO');
+
+            // Inisialisasi chart kedua (Line chart untuk forecast)
             let airQualityForecastChart = new Chart(ctxForecast, {
                 type: 'line',
                 data: {
@@ -299,6 +344,7 @@
             });
         });
     </script>
+
 </body>
 
 </html>

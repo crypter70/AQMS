@@ -85,7 +85,7 @@ header {
 
 .info-card {
     background: white;
-    border: 1px solid #ddd;
+    border: 1px solid transparent;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -105,4 +105,59 @@ header {
 
 .info-card ul {
     padding-left: 20px;
+}
+
+.info-card {
+    padding: 20px;
+    border: transparent;
+    border-radius: 5px;
+    background-color: transparent;
+}
+
+.info-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.info-text {
+    flex: 1;
+    min-width: 200px;
+}
+
+.info-image {
+    flex: 1;
+    min-width: 200px;
+}
+
+.info-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.ispu-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.ispu-category {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px;
+    border-radius: 5px;
+    color: #000;
+    text-align: center;
+}
+
+.ispu-category h4 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.ispu-category p {
+    margin: 0;
+    font-size: 16px;
 }
