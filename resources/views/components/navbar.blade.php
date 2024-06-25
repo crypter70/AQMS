@@ -127,9 +127,10 @@
                                     <div class="message">Suggestion: Wear a mask when going outside.</div>
                                     <div class="timestamp">30 minutes ago</div>
                                 </div>
-                            </a></li>
+                            </a>
+                        </li>
                         <li>
-                            <div class="dropdown-footer"><a href="#">View all notifications</a></div>
+                            <div class="dropdown-footer"><a href="/notification">View all notifications</a></div>
                         </li>
                     </ul>
                 </div>

@@ -32,10 +32,10 @@
                             "></i>
                         </h2>
                         <p class="card-text mb-0"><i class="fa-solid fa-location-dot"></i>
-                            <select id="location" onchange="selectLocation()" class="transparent-background">
-                                <option value="Gegerkalong Girang" href="#">FPTK UPI, Setiabudi</option>
-                                <option value="KRU House" href="#">KRU House, Buah Batu</option>
-                                <option value="Masjid Al Muslim" href="#">Masjid Al Muslim, Cibeunying</option>
+                            <select id="location" onchange="selectLocation(this)" class="transparent-background">
+                                <option value="1" href="#">FPTK UPI, Setiabudi</option>
+                                <option value="2" href="#">KRU House, Buah Batu</option>
+                                <option value="3" href="#">Masjid Al Muslim, Cibeunying</option>
                             </select>
                         </p>
                         <p class="card-text"><i class="fa-solid fa-calendar-days"></i> <span id="date-time">{{ $data['time_captured'] }}</spa></p>
@@ -71,7 +71,7 @@
                                     PM2.5
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" data-chart="pm2.5">PM2.5</a></li>
+                                    <li><a class="dropdown-item" href="#" data-chart="pm25">PM2.5</a></li>
                                     <li><a class="dropdown-item" href="#" data-chart="pm10">PM10</a></li>
                                     <li><a class="dropdown-item" href="#" data-chart="co">CO</a></li>
                                 </ul>
@@ -187,6 +187,9 @@
             </div>
     </section>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -208,7 +211,9 @@
                     } else if (value > 300) {
                         return 'Hazardous';
                     }
-                } else if (type === 'CO') {
+                }
+                    
+                else if (type === 'CO') {
                     if (value >= 1 && value <= 50) {
                         return 'Good';
                     } else if (value >= 51 && value <= 100) {
@@ -221,6 +226,7 @@
                         return 'Hazardous';
                     }
                 }
+                
                 return 'Invalid';
             }
 
@@ -234,10 +240,10 @@
             let chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['W1', 'W2', 'W3', 'W4'],
+                    labels: ['Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
                         label: 'PM2.5',
-                        data: [10, 60, 80, 75],
+                        data: [10, 60, 80, 75, 66, 32, 20],
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1
@@ -255,9 +261,9 @@
             // Fungsi untuk memperbarui data chart
             function updateChart(chart, type) {
                 const dataSets = {
-                    pm25: [10, 60, 80, 75],
-                    pm10: [10, 58, 70, 45],
-                    co: [5, 20, 30, 44],
+                    pm25: [10, 60, 80, 75, 66, 32, 20],
+                    pm10: [10, 50, 20, 15, 40, 52, 10],
+                    co: [10, 20, 30, 25, 35, 45, 40],
                 };
 
                 chart.data.datasets[0].data = dataSets[type];
@@ -343,6 +349,32 @@
                 }
             });
         });
+
+        function selectLocation(selected) {
+            var token = $("meta[name='csrf-token']").attr("content");
+            var value = selected.value;
+            $.ajax({
+                type: 'GET',
+                url: 'api/telemetry/get/' + value,
+                data: {
+                    'location': value,
+                    '_token': token
+                },
+                beforeSend: function() {
+                    console.log("Post data.");
+                }
+            }).done(function(response) {
+                document.getElementById("pm1-value").innerHTML = response["pm_1_0_level"];
+                document.getElementById("pm25-value").innerHTML = response["pm_2_5_level"];
+                document.getElementById("pm10-value").innerHTML = response["pm_10_0_level"];
+                document.getElementById("co-value").innerHTML = response["co_level"];
+                document.getElementById("temperature-value").innerHTML = response["dht22_temperature"];
+                document.getElementById("humidity-value").innerHTML = response["dht22_humidity"];
+                document.getElementById("pressure-value").innerHTML = response["bme280_pressure"];
+            }).fail(function(response) {
+                console.log("Not sent: " + response);
+            });
+        }
     </script>
 
 </body>
