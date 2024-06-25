@@ -16,8 +16,8 @@
 <body>
     @include('components.navbar')
     <div class="container mt-3">
-        <h1>Frequently Asked Questions (FAQ)</h1>
-        <div class="accordion" id="faqAccordion">
+        <h3>Frequently Asked Questions (FAQ)</h3>
+        <div class="accordion mt-3" id="faqAccordion">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -65,26 +65,38 @@
                         You can reduce exposure to air pollution by staying indoors on days when air quality is poor, using air purifiers, avoiding heavy traffic areas, and wearing masks if necessary. It's also helpful to stay informed about daily air quality levels through reliable monitoring systems.
                     </div>
                 </div>
-            </div>
-            <div class="accordion-item">
+                </div>
+                <div class="accordion-item">
                 <h2 class="accordion-header" id="headingFive">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                        How can I reduce exposure to air pollution?
+                    Why is air quality important?
                     </button>
                 </h2>
                 <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        You can reduce exposure to air pollution by staying indoors on days when air quality is poor, using air purifiers, avoiding heavy traffic areas, and wearing masks if necessary. It's also helpful to stay informed about daily air quality levels through reliable monitoring systems.
+                    Good air quality is important for human health, the environment, and the economy. Polluted air can cause various health problems such as respiratory diseases, heart disease, and lung cancer. Additionally, air pollution can damage plants, animals, and buildings.
                     </div>
                 </div>
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingSix">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
-                        How can I reduce exposure to air pollution?
+                    What pollutants are monitored by this system?
                     </button>
                 </h2>
                 <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                    This system generally monitors pollutants such as Particulate Matter (PM1.0, PM2.5, and PM10) and Carbon Monoxide (CO).
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingSeven">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                        How can I reduce exposure to air pollution?
+                    </button>
+                </h2>
+                <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
                         You can reduce exposure to air pollution by staying indoors on days when air quality is poor, using air purifiers, avoiding heavy traffic areas, and wearing masks if necessary. It's also helpful to stay informed about daily air quality levels through reliable monitoring systems.
                     </div>

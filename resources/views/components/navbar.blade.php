@@ -36,7 +36,7 @@
     }
 
     .dropdown-menu {
-        width: 500px;
+        width: 350px;
     }
 
     .dropdown-header {
@@ -152,6 +152,17 @@
         var notificationBadge = document.getElementById('notification-badge');
         var bellIcon = document.getElementById('bell-icon');
         var activeIcon = document.getElementById('active-icon');
+
+        // s
+        function toggleNotifications() {
+            const notifications = document.querySelector('.notifications');
+            notifications.classList.toggle('active');
+
+            if (notifications.classList.contains('active')) {
+                const badge = document.querySelector('.notification-bell .badge');
+                badge.textContent = '0';
+            }
+        }
 
         dropdownNotification.addEventListener('click', function() {
             notificationBadge.style.display = 'none';

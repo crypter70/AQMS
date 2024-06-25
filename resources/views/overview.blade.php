@@ -17,7 +17,7 @@
 <body>
     @include('components.navbar')
     <section class="container mt-3">
-        <div class="row">
+        <div class="row equal-height">
             <!-- ISPU Score Section -->
             <div class="col-md-8">
                 <section class="ispu-score" style="background-image: url('images/BG-ispu.png');">
@@ -53,7 +53,7 @@
                         </div>
                         <div class="card" id="co-ispu-card">
                             <h3>CO</h3>
-                            <h2 id="co-ispu-value">20</h2>
+                            <h2 id="co-ispu-value">90</h2>
                             <p id="co-category"></p>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
             </div>
 
             <!-- AVG ISPU Score Section -->
-            <div class="col-md-4">
+            <div class="col-md-4"> 
                 <div class="card">
                     <div class="card-body">
                         <div class="card-header">
@@ -77,7 +77,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <canvas id="chartCanvas" width="400" height="200"></canvas>
+                        <canvas id="chartCanvas" width="auto" height="auto"></canvas>
                         <p class="card-text">June</p>
                     </div>
                 </div>

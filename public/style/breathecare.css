@@ -17,7 +17,6 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
-
 a {
     text-decoration: none;
 }
@@ -56,21 +55,6 @@ header {
     font-size: 1.2em;
     color: var(--navy);
 }
-.hero {
-    background: url('hero-image.jpg') no-repeat center center/cover;
-    color: white;
-    text-align: center;
-    padding: 100px 20px;
-}
-
-.hero h1 {
-    font-size: 3em;
-    margin: 0;
-}
-
-.hero p {
-    font-size: 1.5em;
-}
 
 .content-section {
     padding: 20px;
@@ -79,8 +63,9 @@ header {
 
 .content-section h2 {
     text-align: center;
-    font-size: 2em;
+    font-size: 24px;
     margin-bottom: 20px;
+    font-weight: 600;
 }
 
 .info-card {
@@ -93,7 +78,7 @@ header {
 }
 
 .info-card h3 {
-    font-size: 1.5em;
+    font-size: 18px;
     margin-top: 0;
 }
 
