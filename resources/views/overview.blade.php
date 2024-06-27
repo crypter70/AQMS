@@ -26,8 +26,8 @@
                             <i class="fa-solid fa-circle-info" title="This is the ISPU (Indeks Standar Pencemaran Udara) Score which indicates the level of air pollution. 
                             1-50    = Good
                             51-100  = Moderate
-                            101-200 = Unhealthy for Sensitive Groups
-                            201-300 = Unhealthy for All
+                            101-200 = Unhealthy 
+                            201-300 = Very Unhealthy 
                             ≥ 301   = Hazardous
                             "></i>
                         </h2>
@@ -38,7 +38,7 @@
                                 <option value="3" href="#">Masjid Al Muslim, Cibeunying</option>
                             </select>
                         </p>
-                        <p class="card-text"><i class="fa-solid fa-calendar-days"></i> <span id="date-time">{{ $data['time_captured'] }}</spa></p>
+                        <p class="card-text"><i class="fa-solid fa-calendar-days"></i> <span id="date-time"></span></p>
                     </div>
                     <div class="card-container mt-3">
                         <div class="card" id="pm25-ispu-card">
@@ -61,7 +61,7 @@
             </div>
 
             <!-- AVG ISPU Score Section -->
-            <div class="col-md-4"> 
+            <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="card-header">
@@ -197,44 +197,96 @@
             const ctx = document.getElementById('chartCanvas').getContext('2d');
             const ctxForecast = document.getElementById('airQualityForecastChart').getContext('2d');
 
-            // Fungsi untuk memperbarui kategori berdasarkan nilai ISPU
-            function getCategory(value, type) {
-                if (type === 'PM2.5' || type === 'PM10') {
-                    if (value >= 1 && value <= 50) {
-                        return 'Good';
-                    } else if (value >= 51 && value <= 100) {
-                        return 'Moderate';
-                    } else if (value >= 101 && value <= 200) {
-                        return 'Unhealthy';
-                    } else if (value >= 201 && value <= 300) {
-                        return 'Unhealthy for All';
-                    } else if (value > 300) {
-                        return 'Hazardous';
-                    }
-                }
-                    
-                else if (type === 'CO') {
-                    if (value >= 1 && value <= 50) {
-                        return 'Good';
-                    } else if (value >= 51 && value <= 100) {
-                        return 'Moderate';
-                    } else if (value >= 101 && value <= 150) {
-                        return 'Unhealthy';
-                    } else if (value >= 151 && value <= 200) {
-                        return 'Very Unhealthy';
-                    } else if (value > 200) {
-                        return 'Hazardous';
-                    }
-                }
-                
-                return 'Invalid';
+            /* Perhitungan ISPU
+
+            Keterangan:
+            I   = ISPU terhitung
+            Ia  = ISPU batas atas
+            Ib  = ISPU batas bawah
+            Xa  = Konsentrasi ambien batas atas (μg/m^3)
+            Xb  = Konsentrasi ambien batas bawah (μg/m^3)
+            Xx  = Konsentrasi ambien nyata hasil pengukuran (μg/m^3) */
+
+            function calculateISPU(Ia, Ib, Xa, Xb, Xx) {
+                return ((Ia - Ib) * (Xx - Xb)) / (Xa - Xb) + Ib;
             }
 
+            // Penentuan kategori berdasarkan nilai ISPU
+            function getCategory(value, type) {
+                let ISPUValue;
+
+                if (type === 'PM2.5') {
+                    // Penentuan batas atas dan batas bawah untuk PM2.5
+                    if (value <= 15.5) {
+                        ISPUValue = calculateISPU(50, 0, 15.5, 0, value);
+                    } else if (value <= 55.4) {
+                        ISPUValue = calculateISPU(100, 51, 55.4, 15.5, value);
+                    } else if (value <= 150.4) {
+                        ISPUValue = calculateISPU(200, 101, 150.4, 55.4, value);
+                    } else if (value <= 250.4) {
+                        ISPUValue = calculateISPU(300, 201, 250.4, 150.4, value);
+                    } else {
+                        ISPUValue = calculateISPU(500, 301, 500, 250.4, value);
+                    }
+                } else if (type === 'PM10') {
+                    // Penentuan batas atas dan batas bawah untuk PM10
+                    if (value <= 50) {
+                        ISPUValue = calculateISPU(50, 0, 50, 0, value);
+                    } else if (value <= 150) {
+                        ISPUValue = calculateISPU(100, 51, 150, 50, value);
+                    } else if (value <= 350) {
+                        ISPUValue = calculateISPU(200, 101, 350, 150, value);
+                    } else if (value <= 420) {
+                        ISPUValue = calculateISPU(300, 201, 420, 350, value);
+                    } else {
+                        ISPUValue = calculateISPU(500, 301, 500, 420, value);
+                    }
+                } else if (type === 'CO') {
+                    // Penentuan batas atas dan batas bawah untuk CO
+                    if (value <= 50) {
+                        ISPUValue = calculateISPU(50, 0, 50, 0, value);
+                    } else if (value <= 100) {
+                        ISPUValue = calculateISPU(100, 51, 100, 50, value);
+                    } else if (value <= 150) {
+                        ISPUValue = calculateISPU(150, 101, 150, 100, value);
+                    } else if (value <= 200) {
+                        ISPUValue = calculateISPU(200, 151, 200, 150, value);
+                    } else {
+                        ISPUValue = calculateISPU(300, 201, 300, 200, value);
+                    }
+                }
+
+                // Penentuan kategori berdasarkan nilai ISPU
+                if (ISPUValue <= 50) {
+                    return 'Good';
+                } else if (ISPUValue <= 100) {
+                    return 'Moderate';
+                } else if (ISPUValue <= 200) {
+                    return 'Unhealthy';
+                } else if (ISPUValue <= 300) {
+                    return 'Very Unhealthy';
+                } else {
+                    return 'Hazardous';
+                }
+            }
+
+            // update ISPU
             function updateCategory(elementId, value, type) {
                 const categoryElement = document.getElementById(elementId);
                 const category = getCategory(value, type);
                 categoryElement.textContent = category;
             }
+
+            // Real-time display
+            function updateDateTime() {
+                const dateTimeElement = document.getElementById('date-time');
+                const now = new Date();
+                const formattedDateTime = now.toLocaleString();
+                dateTimeElement.textContent = formattedDateTime;
+            }
+
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
 
             // Inisialisasi chart pertama (Bar chart)
             let chart = new Chart(ctx, {

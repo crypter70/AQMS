@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [MainController::class, 'index']);
+Route::get('/average-readings', [MainController::class, 'getAverageReadings']);
 
 Route::get('/test-mqtt', function () {
     return view('test.mqtt');
