@@ -33,9 +33,9 @@
                         </h2>
                         <p class="card-text mb-0"><i class="fa-solid fa-location-dot"></i>
                             <select id="location" onchange="selectLocation(this)" class="transparent-background">
-                                <option value="1" href="#">FPTK UPI, Setiabudi</option>
+                                <option value="1" href="#">Pelesiran, Lebak Siliwangi</option>
                                 <option value="2" href="#">KRU House, Buah Batu</option>
-                                <option value="3" href="#">Pelesiran, Lebak Siliwangi</option>
+                                <option value="3" href="#">FPTK UPI, Setiabudi</option>
                             </select>
                         </p>
                         <p class="card-text"><i class="fa-solid fa-calendar-days"></i> <span id="date-time"></span></p>
