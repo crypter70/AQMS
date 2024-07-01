@@ -35,7 +35,7 @@
                             <select id="location" onchange="selectLocation(this)" class="transparent-background">
                                 <option value="1" href="#">FPTK UPI, Setiabudi</option>
                                 <option value="2" href="#">KRU House, Buah Batu</option>
-                                <option value="3" href="#">Masjid Al Muslim, Cibeunying</option>
+                                <option value="3" href="#">Pelesiran, Lebak Siliwangi</option>
                             </select>
                         </p>
                         <p class="card-text"><i class="fa-solid fa-calendar-days"></i> <span id="date-time"></span></p>

@@ -128,6 +128,13 @@
             fillOpacity: 0.5,
             radius: 250
         }).addTo(map);
+
+        var pelesiran = L.circle([ -6.890830006190444, 107.61117125701523], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 250
+        }).addTo(map);
     </script>
 </body>
 
