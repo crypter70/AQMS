@@ -253,15 +253,6 @@
                 });
             });
 
-            // Perbarui kategori ISPU berdasarkan nilai
-            const pm25Value = parseInt(document.getElementById('pm25-ispu-value').textContent);
-            const pm10Value = parseInt(document.getElementById('pm10-ispu-value').textContent);
-            const coValue = parseInt(document.getElementById('co-ispu-value').textContent);
-
-            updateCategory('pm25-category', pm25Value, 'PM2.5');
-            updateCategory('pm10-category', pm10Value, 'PM10');
-            updateCategory('co-category', coValue, 'CO');
-
             // Inisialisasi chart kedua (Line chart untuk forecast)
             let airQualityForecastChart = new Chart(ctxForecast, {
                 type: 'line',

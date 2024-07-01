@@ -59,6 +59,7 @@ class MQTTCommand extends Command
             // MQ7 sensor.
             $insert['co_level'] = $this->convert_co($request['sensor']['MQ7']['PPM']);
             echo $insert['time_captured'] . "\n";
+            echo $insert['co_level'] . "\n";
 
             // Insert data to database.
             TelemetryLog::create($insert);
