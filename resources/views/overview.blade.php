@@ -33,9 +33,9 @@
                         </h2>
                         <p class="card-text mb-0"><i class="fa-solid fa-location-dot"></i>
                             <select id="location" onchange="selectLocation(this)" class="transparent-background">
-                                <option value="1" href="#">Pelesiran, Lebak Siliwangi</option>
-                                <option value="2" href="#">FPTK UPI, Setiabudi</option>
-                                <option value="3" href="#">KRU House, Buah Batu</option>
+                                <option value="1" href="#">{{ $device['0']['name'] }}</option>
+                                <option value="2" href="#">{{ $device['1']['name'] }}</option>
+                                <option value="3" href="#">{{ $device['2']['name'] }}</option>
                             </select>
                         </p>
                         <p class="card-text"><i class="fa-solid fa-calendar-days"></i> <span id="date-time"></span></p>
@@ -43,18 +43,18 @@
                     <div class="card-container mt-3">
                         <div class="card" id="pm25-ispu-card">
                             <h3>PM2.5</h3>
-                            <h2 id="pm25-ispu-value">200</h2>
-                            <p id="pm25-category"></p>
+                            <h2 id="pm25-ispu-value">{{ round($ispu['pm25']) }}</h2>
+                            <p id="pm25-category">{{ $ispu['category_pm25'] }}</p>
                         </div>
                         <div class="card" id="pm10-ispu-card">
                             <h3>PM10</h3>
-                            <h2 id="pm10-ispu-value">96</h2>
-                            <p id="pm10-category"></p>
+                            <h2 id="pm10-ispu-value">{{ round($ispu['pm10']) }}</h2>
+                            <p id="pm10-category">{{ $ispu['category_pm10'] }}</p>
                         </div>
                         <div class="card" id="co-ispu-card">
                             <h3>CO</h3>
-                            <h2 id="co-ispu-value">90</h2>
-                            <p id="co-category"></p>
+                            <h2 id="co-ispu-value">{{ round($ispu['co']) }}</h2>
+                            <p id="co-category">{{ $ispu['category_co'] }}</p>
                         </div>
                     </div>
                 </section>
@@ -197,86 +197,6 @@
             const ctx = document.getElementById('chartCanvas').getContext('2d');
             const ctxForecast = document.getElementById('airQualityForecastChart').getContext('2d');
 
-            /* Perhitungan ISPU
-
-            Keterangan:
-            I   = ISPU terhitung
-            Ia  = ISPU batas atas
-            Ib  = ISPU batas bawah
-            Xa  = Konsentrasi ambien batas atas (μg/m^3)
-            Xb  = Konsentrasi ambien batas bawah (μg/m^3)
-            Xx  = Konsentrasi ambien nyata hasil pengukuran (μg/m^3) */
-
-            function calculateISPU(Ia, Ib, Xa, Xb, Xx) {
-                return ((Ia - Ib) * (Xx - Xb)) / (Xa - Xb) + Ib;
-            }
-
-            // Penentuan kategori berdasarkan nilai ISPU
-            function getCategory(value, type) {
-                let ISPUValue;
-
-                if (type === 'PM2.5') {
-                    // Penentuan batas atas dan batas bawah untuk PM2.5
-                    if (value <= 15.5) {
-                        ISPUValue = calculateISPU(50, 0, 15.5, 0, value);
-                    } else if (value <= 55.4) {
-                        ISPUValue = calculateISPU(100, 51, 55.4, 15.5, value);
-                    } else if (value <= 150.4) {
-                        ISPUValue = calculateISPU(200, 101, 150.4, 55.4, value);
-                    } else if (value <= 250.4) {
-                        ISPUValue = calculateISPU(300, 201, 250.4, 150.4, value);
-                    } else {
-                        ISPUValue = calculateISPU(500, 301, 500, 250.4, value);
-                    }
-                } else if (type === 'PM10') {
-                    // Penentuan batas atas dan batas bawah untuk PM10
-                    if (value <= 50) {
-                        ISPUValue = calculateISPU(50, 0, 50, 0, value);
-                    } else if (value <= 150) {
-                        ISPUValue = calculateISPU(100, 51, 150, 50, value);
-                    } else if (value <= 350) {
-                        ISPUValue = calculateISPU(200, 101, 350, 150, value);
-                    } else if (value <= 420) {
-                        ISPUValue = calculateISPU(300, 201, 420, 350, value);
-                    } else {
-                        ISPUValue = calculateISPU(500, 301, 500, 420, value);
-                    }
-                } else if (type === 'CO') {
-                    // Penentuan batas atas dan batas bawah untuk CO
-                    if (value <= 50) {
-                        ISPUValue = calculateISPU(50, 0, 50, 0, value);
-                    } else if (value <= 100) {
-                        ISPUValue = calculateISPU(100, 51, 100, 50, value);
-                    } else if (value <= 150) {
-                        ISPUValue = calculateISPU(150, 101, 150, 100, value);
-                    } else if (value <= 200) {
-                        ISPUValue = calculateISPU(200, 151, 200, 150, value);
-                    } else {
-                        ISPUValue = calculateISPU(300, 201, 300, 200, value);
-                    }
-                }
-
-                // Penentuan kategori berdasarkan nilai ISPU
-                if (ISPUValue <= 50) {
-                    return 'Good';
-                } else if (ISPUValue <= 100) {
-                    return 'Moderate';
-                } else if (ISPUValue <= 200) {
-                    return 'Unhealthy';
-                } else if (ISPUValue <= 300) {
-                    return 'Very Unhealthy';
-                } else {
-                    return 'Hazardous';
-                }
-            }
-
-            // update ISPU
-            function updateCategory(elementId, value, type) {
-                const categoryElement = document.getElementById(elementId);
-                const category = getCategory(value, type);
-                categoryElement.textContent = category;
-            }
-
             // Real-time display
             function updateDateTime() {
                 const dateTimeElement = document.getElementById('date-time');
@@ -292,7 +212,7 @@
             let chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'],
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
                         label: 'PM2.5',
                         data: [10, 60, 80, 75, 66, 32, 20],

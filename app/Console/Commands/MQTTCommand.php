@@ -57,7 +57,7 @@ class MQTTCommand extends Command
             $insert['pm_10_0_level'] = $request['sensor']['ZH03B']['PM10.0'];
 
             // MQ7 sensor.
-            $insert['co_level'] = $request['sensor']['MQ7']['PPM'];
+            $insert['co_level'] = $this->convert_co($request['sensor']['MQ7']['PPM']);
             echo $insert['time_captured'] . "\n";
 
             // Insert data to database.
@@ -65,5 +65,10 @@ class MQTTCommand extends Command
         }, 1);
 
         $mqtt->loop(true);
+    }
+
+    public function convert_co($co_level)
+    {
+        return ($co_level * 28) / (24.5 * 0.001);
     }
 }

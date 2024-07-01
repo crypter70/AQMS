@@ -22,10 +22,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('AIzaSyCYIS_w6_3nx6Hg1uxMTDKm_M92qCqkCSQ') }}&callback=initMap" async defer></script>
+    
     <script>
         mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
             'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -111,30 +108,65 @@
         L.control.layers(baseLayers, overlays).addTo(map);
         map.attributionControl.setPrefix(false);
 
-        var fptk = L.circle([-6.864124298095703, 107.59412384033203], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 250
-        })
+        var data = [
+            @foreach ($devices as $device)
+            {
+                "id": "{{ $device['id'] }}",
+                "name": "{{ $device['name'] }}",
+                "lat": "{{ $device['latitude'] }}",
+                "lng": "{{ $device['longitude'] }}",
+                
+                "pm25": "{{ $ispu[$device['id']]['pm25'] }}",
+                "pm10": "{{ $ispu[$device['id']]['pm10'] }}",
+                "co": "{{ $ispu[$device['id']]['co'] }}",
 
-        .addTo(map).bindPopup(
-            "<div class='my-2'><strong>Value:</strong> <br></div>"
-        );;
+                "category_pm25": "{{ $ispu[$device['id']]['category_pm25'] }}",
+                "category_pm10": "{{ $ispu[$device['id']]['category_pm10'] }}",
+                "category_co": "{{ $ispu[$device['id']]['category_co'] }}",
+            },
+            @endforeach
+        ];
+        
+        var spot = []; 
+        data.forEach(function (item) {
+            let color;
+            switch (item.category_pm10) {
+                case 'Good':
+                    color = 'green'
+                    break;
+                case 'Moderate':
+                    color = 'blue'
+                    break;
+                case 'Unhealthy':
+                    color = 'yellow'
+                    break;
+                case 'Very Unhealthy':
+                    color = 'red'
+                    break;
+                case 'Hazardous':
+                    color = 'black'
+                    break;
+                default:
+                    break;
+            }
 
-        var kruHouse = L.circle([ -6.944840590703077, 107.62355432423948], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 250
-        }).addTo(map);
-
-        var pelesiran = L.circle([ -6.890830006190444, 107.61117125701523], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 250
-        }).addTo(map);
+            spot[item.id] = L.circle([item.lat, item.lng], {
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.5,
+                radius: 250
+            }).addTo(map).bindPopup(
+                "<div class='my-2'><strong>Nama Wilayah: </strong>" + item.name + "<br></div>" +
+                "<div class='my-2'><strong>Latitude: </strong>" + item.lat + "<br></div>" +
+                "<div class='my-2'><strong>Longitude: </strong>" + item.lng + "<br></div>" +
+                "<hr/>" +
+                "<div class='my-2 text-center'><strong>ISPU</strong><br></div>" +
+                "<div class='my-2'><strong>PM2.5: </strong>" + item.pm25 + "<br></div>" +
+                "<div class='my-2'><strong>PM10: </strong>" + item.pm10 + "<br></div>" +
+                "<div class='my-2'><strong>CO: </strong>" + item.co + "<br></div>" +
+                "<div class='my-2'><strong>Status: </strong><span style='color:" + color + "';>" + item.category_pm10 + "<br></span></div>"
+            );
+        });
     </script>
 </body>
 

@@ -2,24 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Device;
 use App\Models\TelemetryLog;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class MainController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $value = $request->session()->get("id_device", 1);
-        $data = TelemetryLog::where('id_device', $value)->orderBy('time_captured', 'desc')->first();
-        return view('overview', compact('data'));
+        if(!session()->has("id_device"))
+        {
+            session(["id_device" => '1']);
+        }
+
+        $id = session("id_device", '1');
+        
+        $device = Device::all();
+        $data = TelemetryLog::where('id_device', $id)->orderBy('time_captured', 'desc')->first();
+        $ispu =  ISPUController::get_ispu($id);
+
+        return view('overview', compact('data', 'device', 'ispu'));
+    }
+
+    public function airmap()
+    {
+        $devices = Device::all();
+        $ispu['1'] =  ISPUController::get_ispu('1');
+        $ispu['2'] =  ISPUController::get_ispu('2');
+        $ispu['3'] =  ISPUController::get_ispu('3');
+
+        return view('airmap', compact('devices', 'ispu'));
     }
 
     public function get_data($data)
     {
         $data = TelemetryLog::where('id_device', $data)->orderBy('time_captured', 'desc')->first();
-        $ispu = TelemetryLog::where('');
 
+        session(["id_device" => $data]);
         return response()->json($data);
     }
 
@@ -43,41 +63,7 @@ class MainController extends Controller
     //         ]);
     // }
 
-    public function getISPUData()
-    {
-        $deviceId = session('id_device', 1);
-        $now = Carbon::now();
-        $yesterday = Carbon::now()->subDay();
-
-        // Ambil data sensor selama 24 jam terakhir untuk id_device tertentu
-        $readings = TelemetryLog::where('id_device', $deviceId)
-            ->whereBetween('time_captured', [$yesterday, $now])
-            ->get();
-
-        // Hitung rata-rata PM2.5, PM10, dan CO
-        $averagePM25 = $readings->avg('pm_2_5_level');
-        $averagePM10 = $readings->avg('pm_10_0_level');
-        $averageCO = $readings->avg('co_level');
-
-        // Menghitung ISPU menggunakan rumus yang telah diberikan
-        $ispuPM25 = $this->calculateISPU($averagePM25, 'PM2.5');
-        $ispuPM10 = $this->calculateISPU($averagePM10, 'PM10');
-        $ispuCO = $this->calculateISPU($averageCO, 'CO');
-
-        // Dapatkan kategori notifikasi
-        $notifications = $this->getNotifications($ispuPM25, 'PM2.5');
-        $notifications = array_merge($notifications, $this->getNotifications($ispuPM10, 'PM10'));
-        $notifications = array_merge($notifications, $this->getNotifications($ispuCO, 'CO'));
-
-        return response()->json([
-            'pm2_5' => $ispuPM25,
-            'pm10' => $ispuPM10,
-            'co' => $ispuCO,
-            'notifications' => $notifications,
-        ]);
-    }
-
-    private function getNotifications($value, $type)
+    /* private function getNotifications($value, $type)
     {
         $category = $this->getCategory($value, $type);
         $notifications = [];
@@ -87,5 +73,5 @@ class MainController extends Controller
         }
 
         return $notifications;
-    }
+    } */
 }
