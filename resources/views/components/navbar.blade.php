@@ -93,9 +93,9 @@
                     <a class="nav-link {{ Request::is('breathecare') ? 'active' : '' }}" href="/breathecare">Breathe Care</a>
                 </li>
             </ul>
-            <form class="d-flex" role="search">
+            <!-- <form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Search from here..." aria-label="Search">
-            </form>
+            </form> -->
             <div class="nav-icons ms-auto">
                 <div class="dropdown">
                     <a href="#" class="nav-icon" id="dropdownNotification" data-bs-toggle="dropdown" aria-expanded="false">

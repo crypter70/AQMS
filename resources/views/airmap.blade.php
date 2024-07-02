@@ -156,7 +156,7 @@
                 fillOpacity: 0.5,
                 radius: 250
             }).addTo(map).bindPopup(
-                "<div class='my-2'><strong>Nama Wilayah: </strong>" + item.name + "<br></div>" +
+                "<div class='my-2'><strong>Location: </strong>" + item.name + "<br></div>" +
                 "<div class='my-2'><strong>Latitude: </strong>" + item.lat + "<br></div>" +
                 "<div class='my-2'><strong>Longitude: </strong>" + item.lng + "<br></div>" +
                 "<hr/>" +

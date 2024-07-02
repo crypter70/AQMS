@@ -78,7 +78,7 @@
                             </div>
                         </div>
                         <canvas id="chartCanvas" width="auto" height="auto"></canvas>
-                        <p class="card-text">June</p>
+                        <p class="card-text">July</p>
                     </div>
                 </div>
             </div>
@@ -132,7 +132,7 @@
                             <img src="images/CO.png" class="mb-3" height="30" alt="">
                         </a>
                         <h5 class="card-title">CO</h5>
-                        <p class="card-text"><span id="co-value">{{ $data['co_level'] }}</span> ppm</p>
+                        <p class="card-text"><span id="co-value">{{ $data['co_level'] }}</span> µg/m³</p>
                     </div>
                 </div>
             </div>
