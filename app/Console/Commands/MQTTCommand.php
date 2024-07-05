@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\TelemetryEvent;
 use App\Models\TelemetryLog;
 use Illuminate\Console\Command;
 use PhpMqtt\Client\Facades\MQTT;
@@ -63,6 +64,10 @@ class MQTTCommand extends Command
 
             // Insert data to database.
             TelemetryLog::create($insert);
+
+            // Dispatch event.
+            TelemetryEvent::dispatch($insert);
+
         }, 1);
 
         $mqtt->loop(true);

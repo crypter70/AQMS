@@ -8,6 +8,18 @@ use Illuminate\Http\Request;
 
 class TelemetryLogController extends Controller
 {
+    public function get($data)
+    {
+        $log = TelemetryLog::where('id_device', $data)->orderBy('time_captured', 'desc')->first();
+        $ispu = ISPUController::get_ispu($data);
+
+        session(["id_device" => $data]);
+        return response()->json([
+            'data' => $log,
+            'ispu' => $ispu
+        ]);
+    }
+    
     public function store(StoreTelemetryLogRequest $request)
     {
         $insert = [];

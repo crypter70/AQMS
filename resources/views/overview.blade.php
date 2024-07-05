@@ -192,6 +192,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('chartCanvas').getContext('2d');
@@ -313,6 +315,7 @@
             });
         });
 
+        var currentLoc = 1;
         function selectLocation(selected) {
             var token = $("meta[name='csrf-token']").attr("content");
             var value = selected.value;
@@ -327,19 +330,59 @@
                     console.log("Post data.");
                 }
             }).done(function(response) {
-                document.getElementById("pm1-value").innerHTML = response["pm_1_0_level"];
-                document.getElementById("pm25-value").innerHTML = response["pm_2_5_level"];
-                document.getElementById("pm10-value").innerHTML = response["pm_10_0_level"];
-                document.getElementById("co-value").innerHTML = response["co_level"];
-                document.getElementById("temperature-value").innerHTML = response["dht22_temperature"];
-                document.getElementById("humidity-value").innerHTML = response["dht22_humidity"];
-                document.getElementById("pressure-value").innerHTML = response["bme280_pressure"];
+                document.getElementById("pm1-value").innerHTML = response["data"]["pm_1_0_level"];
+                document.getElementById("pm25-value").innerHTML = response["data"]["pm_2_5_level"];
+                document.getElementById("pm10-value").innerHTML = response["data"]["pm_10_0_level"];
+                document.getElementById("co-value").innerHTML = response["data"]["co_level"];
+                document.getElementById("temperature-value").innerHTML = response["data"]["dht22_temperature"];
+                document.getElementById("humidity-value").innerHTML = response["data"]["dht22_humidity"];
+                document.getElementById("pressure-value").innerHTML = response["data"]["bme280_pressure"];
+
+                document.getElementById("pm25-ispu-value").innerHTML = Math.round(response["ispu"]["pm25"]);
+                document.getElementById("pm10-ispu-value").innerHTML = Math.round(response["ispu"]["pm10"]);
+                document.getElementById("co-ispu-value").innerHTML = Math.round(response["ispu"]["co"]);
+
+                document.getElementById("pm25-category").innerHTML = response["ispu"]["category_pm25"];
+                document.getElementById("pm10-category").innerHTML = response["ispu"]["category_pm10"];
+                document.getElementById("co-category").innerHTML = response["ispu"]["category_co"];
+
+                currentLoc = value;
             }).fail(function(response) {
                 console.log("Not sent: " + response);
             });
         }
     </script>
+    <script>
+        Pusher.logToConsole = true;
+        var pusher = new Pusher('{{ env("PUSHER_APP_KEY") }}', {
+            cluster: '{{ env("PUSHER_APP_CLUSTER") }}'
+        });
 
+        var channel = pusher.subscribe('telemetry');
+        channel.bind("App\\Events\\TelemetryEvent", function(data) {
+            if(data.telemetry.id_device == currentLoc)
+            {
+                document.getElementById("pm1-value").innerHTML = data.telemetry.pm_1_0_level;
+                document.getElementById("pm25-value").innerHTML = data.telemetry.pm_2_5_level;
+                document.getElementById("pm10-value").innerHTML = data.telemetry.pm_10_0_level;
+                document.getElementById("co-value").innerHTML = data.telemetry.co_level;
+                document.getElementById("temperature-value").innerHTML = data.telemetry.dht22_temperature;
+                document.getElementById("humidity-value").innerHTML = data.telemetry.dht22_humidity;
+                document.getElementById("pressure-value").innerHTML = data.telemetry.bme280_pressure;
+
+                /* document.getElementById("pm25-ispu-value").innerHTML = Math.round(response["ispu"]["pm25"]);
+                document.getElementById("pm10-ispu-value").innerHTML = Math.round(response["ispu"]["pm10"]);
+                document.getElementById("co-ispu-value").innerHTML = Math.round(response["ispu"]["co"]);
+
+                document.getElementById("pm25-category").innerHTML = response["ispu"]["category_pm25"];
+                document.getElementById("pm10-category").innerHTML = response["ispu"]["category_pm10"];
+                document.getElementById("co-category").innerHTML = response["ispu"]["category_co"]; */
+            }
+
+            console.log("Device: " + data.telemetry.id_device);
+        });
+
+    </script>
 </body>
 
 </html>

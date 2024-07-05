@@ -20,5 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('telemetry/get/{data}', [MainController::class, 'get_data'])->name('telemetry_logs.get');
+Route::get('telemetry/get/{data}', [TelemetryLogController::class, 'get'])->name('telemetry_logs.get');
 Route::post('telemetry/store', [TelemetryLogController::class, 'store'])->name('telemetry_logs.store');

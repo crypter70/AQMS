@@ -123,6 +123,7 @@
                 "category_pm25": "{{ $ispu[$device['id']]['category_pm25'] }}",
                 "category_pm10": "{{ $ispu[$device['id']]['category_pm10'] }}",
                 "category_co": "{{ $ispu[$device['id']]['category_co'] }}",
+                "category_highest": "{{ $ispu[$device['id']]['highest'] }}"
             },
             @endforeach
         ];
@@ -130,7 +131,7 @@
         var spot = []; 
         data.forEach(function (item) {
             let color;
-            switch (item.category_pm10) {
+            switch (item.category_highest) {
                 case 'Good':
                     color = 'green'
                     break;
@@ -164,7 +165,7 @@
                 "<div class='my-2'><strong>PM2.5: </strong>" + item.pm25 + "<br></div>" +
                 "<div class='my-2'><strong>PM10: </strong>" + item.pm10 + "<br></div>" +
                 "<div class='my-2'><strong>CO: </strong>" + item.co + "<br></div>" +
-                "<div class='my-2'><strong>Status: </strong><span style='color:" + color + "';>" + item.category_pm10 + "<br></span></div>"
+                "<div class='my-2'><strong>Status: </strong><span style='color:" + color + "';>" + item.category_highest + "<br></span></div>"
             );
         });
     </script>

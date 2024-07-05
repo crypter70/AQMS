@@ -32,15 +32,23 @@ class MainController extends Controller
         $ispu['2'] =  ISPUController::get_ispu('2');
         $ispu['3'] =  ISPUController::get_ispu('3');
 
+        for($i = 1; $i <= 3; $i++)
+        {
+            if(($ispu[$i]['pm25'] >= $ispu[$i]['pm10']) && ($ispu[$i]['pm25'] >= $ispu[$i]['co']))
+            {
+                $ispu[$i]['highest'] = $ispu[$i]['category_pm25'];
+            }
+            else if(($ispu[$i]['pm10'] >= $ispu[$i]['pm25']) && ($ispu[$i]['pm10'] >= $ispu[$i]['co']))
+            {
+                $ispu[$i]['highest'] = $ispu[$i]['category_pm10'];
+            }
+            else
+            {
+                $ispu[$i]['highest'] = $ispu[$i]['category_co'];
+            }
+        }
+
         return view('airmap', compact('devices', 'ispu'));
-    }
-
-    public function get_data($data)
-    {
-        $data = TelemetryLog::where('id_device', $data)->orderBy('time_captured', 'desc')->first();
-
-        session(["id_device" => $data]);
-        return response()->json($data);
     }
 
     // public function getAverageReadings()
