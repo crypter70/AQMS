@@ -1,0 +1,35 @@
+data_source:
+    directory: 'data/raw/'
+    file_name: export.csv
+    data_column: 'MESSAGE'
+    columns: ['id_sensor', 'date', 'time', 'pm1', 'pm25', 'pm10', 'co', 'temperature', 'humidity', 'pressure']
+    data_to_remove: [6546, 6548, 6549, 6551, 6552, 6553]
+
+
+train_test_data:
+    directory: 'data/processed/'
+    file_name: aqms_data.csv
+
+
+data_mapping:
+    id_sensor: 'ID'
+    dateTime: 'dateTime'
+    date: 'date'
+    time: 'time'
+    
+    sensor: 'sensor'
+
+    ZH03B: 'ZH03B'
+    pm1: 'PM1.0'
+    pm25: 'PM2.5'
+    pm10: 'PM10.0'
+
+    MQ7: 'MQ7'
+    co: 'PPM'
+
+    DHT22: 'DHT22'
+    temperature: 'Temperature'
+    humidity: 'Humidity'
+
+    BME280: 'BME280'
+    pressure: 'Pressure'    
