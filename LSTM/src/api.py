@@ -38,6 +38,7 @@ class PredictionResponse(BaseModel):
 
 # deklarasi model dengan parameter dan load model LSTM pada file lokal
 model = LSTMModel(input_size=1, hidden_size=64, num_layers=2).to(device)
+# model.load_state_dict(torch.load('app/lstm_model.pth', map_location=device))
 model.load_state_dict(torch.load('lstm_model.pth', map_location=device))
 
 # ubah ke mode evaluasi
@@ -94,3 +95,4 @@ def preprocessing(data):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app)
