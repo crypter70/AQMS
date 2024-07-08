@@ -33,13 +33,12 @@ class PredictionRequest(BaseModel):
     data: List[float]  
 
 class PredictionResponse(BaseModel):
-    # predicted_value: List[float]
-    predicted_value: float
+    predicted_value: List[float]
+    # predicted_value: float
 
 # deklarasi model dengan parameter dan load model LSTM pada file lokal
 model = LSTMModel(input_size=1, hidden_size=64, num_layers=2).to(device)
-# model.load_state_dict(torch.load('app/lstm_model.pth', map_location=device))
-model.load_state_dict(torch.load('lstm_model.pth', map_location=device))
+model.load_state_dict(torch.load('../models/sensor_data_1_co_lstm_model.pth', map_location=device))
 
 # ubah ke mode evaluasi
 model.eval()
@@ -68,17 +67,16 @@ async def predict(aqms_data: PredictionRequest):
         with torch.no_grad():
 
             # pindahkan data ke CPU atau GPU
-            data = data.to(device)
+            data = data.to(device)        
             
             # lakukan prediksi, detach dari komputasi, pindahkan data ke CPU, convert ke numpy array, dan inverse scaling hasil prediksi
             predicted_value = model(data).detach().cpu().numpy()
             predicted_value = scaler.inverse_transform(predicted_value.reshape(-1,1))  
-        
-        # return hasil prediksi untuk 1 data atau 1 hari
-        return {"predicted_value": predicted_value[0].item()}
-
+                  
         # return hasil prediksi untuk 7 data atau 7 hari
-        # return {"predicted_value": predicted_value[:7]}
+        return {"predicted_value": predicted_value[:7]}
+        # return {"predicted_value": predicted_value[0].item()}
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
