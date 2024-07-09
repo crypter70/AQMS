@@ -11,10 +11,9 @@ COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 # tambahkan file ke image
-# COPY . /code/app/
-COPY ml_api.py /code/
-COPY lstm_model.pth /code/
+COPY src/api.py ../src/
+COPY models/ ../models/
 
 # running api
-CMD ["fastapi", "run", "ml_api.py", "--port", "80"]
+CMD ["fastapi", "run", "../src/api.py", "--port", "80"]
 
