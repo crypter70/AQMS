@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\ISPUController;
 use App\Events\TelemetryEvent;
 use App\Models\TelemetryLog;
 use Illuminate\Console\Command;
@@ -59,8 +60,11 @@ class MQTTCommand extends Command
 
             // MQ7 sensor.
             $insert['co_level'] = $this->convert_co($request['sensor']['MQ7']['PPM']);
-            echo $insert['time_captured'] . "\n";
-            echo $insert['co_level'] . "\n";
+
+            // ISPU data.
+            $insert['ispu_pm25'] = ISPUController::calculate_ispu($insert['pm_2_5_level'], 'PM2.5');
+            $insert['ispu_pm10'] = ISPUController::calculate_ispu($insert['pm_10_0_level'], 'PM10');
+            $insert['ispu_co'] = ISPUController::calculate_ispu($insert['co_level'], 'CO');
 
             // Insert data to database.
             TelemetryLog::create($insert);
