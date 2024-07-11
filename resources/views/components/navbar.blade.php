@@ -73,6 +73,12 @@
     }
 </style>
 
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
 <nav class="mb-70 navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand" href="/">
@@ -93,56 +99,55 @@
                     <a class="nav-link {{ Request::is('breathecare') ? 'active' : '' }}" href="/breathecare">Breathe Care</a>
                 </li>
             </ul>
-            <!-- <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search from here..." aria-label="Search">
-            </form> -->
+
             <div class="nav-icons ms-auto">
                 <div class="dropdown">
                     <a href="#" class="nav-icon" id="dropdownNotification" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i id="bell-icon" class="fas fa-bell"></i>
-
-                        <img id="active-icon" src="images/notif-fill.png" alt="Active Notification" style="display: none;">
-                        <span class="notification-badge">3</span>
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge">{{ count(session('notifications', [])) }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownNotification">
                         <li>
                             <h6 class="dropdown-header">Notifications</h6>
                         </li>
+                        @foreach(session('notifications', []) as $notification)
                         <li><a class="dropdown-item" href="#">
                                 <div>
-                                    <div class="message">Warning: You are in a hazardous zone!</div>
-                                    <div class="timestamp">2 minutes ago</div>
-                                </div>
-                            </a></li>
-                        <li><a class="dropdown-item" href="#">
-
-                                <div>
-                                    <div class="message">Alert: Poor air quality detected.</div>
-                                    <div class="timestamp">10 minutes ago</div>
-                                </div>
-                            </a></li>
-                        <li><a class="dropdown-item" href="#">
-
-                                <div>
-                                    <div class="message">Suggestion: Wear a mask when going outside.</div>
-                                    <div class="timestamp">30 minutes ago</div>
+                                    <div class="message">{{ $notification['message'] }}</div>
+                                    <div class="timestamp">{{ $notification['timestamp'] }}</div>
                                 </div>
                             </a>
                         </li>
-                        <li>
-                            <div class="dropdown-footer"><a href="/notification">View all notifications</a></div>
-                        </li>
+                        @endforeach
                     </ul>
+                    <a href="/faq" class="nav-icon {{ Request::is('faq') ? 'active' : '' }}">
+                        @if(Request::is('faq'))
+                        <i class="fa-solid fa-circle-question"></i>
+                        @else
+                        <i class="far fa-question-circle"></i>
+                        @endif
+                    </a>
                 </div>
-
-                <a href="/faq" class="nav-icon {{ Request::is('faq') ? 'active' : '' }}">
-                    @if(Request::is('faq'))
-                    <img src="images/info-fill.png" alt="FAQ Icon">
-                    @else
-                    <i class="fa-solid fa-circle-question"></i>
-                    @endif
-                </a>
             </div>
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+            @if(Session::has('toastr'))
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    function showToastr() {
+                        toastr.info("{{ Session::get('toastr') }}");
+                    }
+
+                    // panggil toastr saat halaman pertama kali dimuat
+                    showToastr();
+
+                    // panggil toastr setiap 10 detik
+                    setInterval(showToastr, 10000);
+                });
+            </script>
+            @endif
         </div>
     </div>
 </nav>

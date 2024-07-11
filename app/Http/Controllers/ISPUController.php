@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TelemetryLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 use Carbon\Carbon;
 
@@ -14,11 +15,6 @@ class ISPUController extends Controller
     {
         $today = Carbon::now();
         $yesterday = Carbon::now()->subDay();
-
-        // Ambil data sensor selama 24 jam terakhir untuk id_device tertentu
-        /* $data = TelemetryLog::where('id_device', $device)
-            ->whereBetween('time_captured', [$yesterday, $today])
-            ->get(); */
 
         // DEBUG / SIMULATION PURPOSE.
         $data = TelemetryLog::where('id_device', $device)->get();
@@ -70,41 +66,41 @@ class ISPUController extends Controller
                 if ($xx <= 15.5)
                 {
                     $ia = 50;
-                    $ib = $xb = 1;
+                    $ib = $xb = 0;
 
                     $xa = 15.5;
                 }
                 else if ($xx > 15.5 && $xx <= 55.4)
                 {
                     $ia = 100;
-                    $ib = 51;
+                    $ib = 50;
                     
                     $xa = 55.4;
-                    $xb = 15.6;
+                    $xb = 15.5;
                 }
                 else if ($xx > 55.4 && $xx <= 150.4)
                 {
                     $ia = 200;
-                    $ib = 101;
+                    $ib = 100;
 
                     $xa = 150.4;
-                    $xb = 55.5;
+                    $xb = 55.4;
                 }
                 else if ($xx > 150.4 && $xx <= 250.4)
                 {
                     $ia = 300;
-                    $ib = 201;
+                    $ib = 200;
 
                     $xa = 250.4;
-                    $xb = 150.5;
+                    $xb = 150.4;
                 }
                 else if ($xx > 250.4 && $xx <= 500)
                 {
                     $ia = 400;
-                    $ib = 301;
+                    $ib = 300;
 
                     $xa = 500;
-                    $xb = 250.5;
+                    $xb = 250.4;
                 }
 
                 break;
@@ -113,38 +109,38 @@ class ISPUController extends Controller
                 if ($xx <= 50)
                 {
                     $ia = $xa = 50;
-                    $ib = $xb = 1;
+                    $ib = $xb = 0;
                 }
                 else if ($xx > 50 && $xx <= 150)
                 {
                     $ia = 100;
-                    $ib = $xb = 51;
+                    $ib = $xb = 50;
                     
                     $xa = 150;
                 }
                 else if ($xx > 150 && $xx <= 350)
                 {
                     $ia = 200;
-                    $ib = 101;
+                    $ib = 100;
 
                     $xa = 350;
-                    $xb = 151;
+                    $xb = 150;
                 }
                 else if ($xx > 350 && $xx <= 420)
                 {
                     $ia = 300;
-                    $ib = 201;
+                    $ib = 200;
 
                     $xa = 420;
-                    $xb = 351;
+                    $xb = 350;
                 }
                 else if ($xx > 420 && $xx <= 500)
                 {
                     $ia = 400;
-                    $ib = 301;
+                    $ib = 300;
 
                     $xa = 500;
-                    $xb = 421;
+                    $xb = 420;
                 }
 
                 break;
@@ -153,41 +149,41 @@ class ISPUController extends Controller
                 if ($xx <= 4000)
                 {
                     $ia = 50;
-                    $ib = $xb = 1;
+                    $ib = $xb = 0;
 
                     $xa = 4000;
                 }
                 else if ($xx > 4000 && $xx <= 8000)
                 {
                     $ia = 100;
-                    $ib = 51;
+                    $ib = 50;
                     
                     $xa = 8000;
-                    $xb = 4001;
+                    $xb = 4000;
                 }
                 else if ($xx > 8000 && $xx <= 15000)
                 {
                     $ia = 200;
-                    $ib = 101;
+                    $ib = 100;
 
                     $xa = 15000;
-                    $xb = 8001;
+                    $xb = 8000;
                 }
                 else if ($xx > 15000 && $xx <= 30000)
                 {
                     $ia = 300;
-                    $ib = 201;
+                    $ib = 200;
 
                     $xa = 30000;
-                    $xb = 15001;
+                    $xb = 15000;
                 }
                 else if ($xx > 30000 && $xx <= 45000)
                 {
                     $ia = 400;
-                    $ib = 301;
+                    $ib = 300;
 
                     $xa = 45000;
-                    $xb = 30001;
+                    $xb = 30000;
                 }
 
                 break;
@@ -224,4 +220,47 @@ class ISPUController extends Controller
             return 'Hazardous';
         }
     }
+
+    public function checkAirQuality(Request $request)
+    {
+        // Ambil data kualitas udara terbaru dari TelemetryLog
+        $latestTelemetryLog = TelemetryLog::latest()->first();
+
+        if ($latestTelemetryLog) {
+            // Dapatkan nilai AQI dari TelemetryLog 
+            $ispu = $latestTelemetryLog->ispu;
+            $category = self::categorize_ispu($ispu);
+
+            $message = '';
+            switch ($category) {
+                case 'Unhealthy':
+                    $message = 'Udara di lokasi Anda tidak sehat.';
+                    break;
+                case 'Very Unhealthy':
+                    $message = 'Udara di lokasi Anda sangat tidak sehat.';
+                    break;
+                case 'Hazardous':
+                    $message = 'Udara di lokasi Anda berbahaya.';
+                    break;
+            }
+
+            if ($category == 'Unhealthy' || $category == 'Very Unhealthy' || $category == 'Hazardous') {
+                $notifications = session('notifications', []);
+                $notifications[] = [
+                    'message' => $message,
+                    'timestamp' => now()->diffForHumans()
+                ];
+
+                // Set pesan notifikasi ke session untuk Toastr dan dropdown menu
+                Session::flash('toastr', $message);
+                Session::put('notifications', $notifications);
+            }
+        }
+
+        return redirect()->back(); // Redirect ke halaman sebelumnya atau halaman lain
+    }
+
+    
+    
+    
 }
