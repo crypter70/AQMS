@@ -189,7 +189,6 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -259,22 +258,22 @@
             let airQualityForecastChart = new Chart(ctxForecast, {
                 type: 'line',
                 data: {
-                    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    labels: Array.from({length: 24}, (v, i) => `${i}:00`),
                     datasets: [{
                         label: 'PM2.5',
-                        data: [30, 50, 70, 60, 80, 100, 90],
+                        data: [30, 35, 32, 33, 36, 38, 37, 40, 42, 41, 43, 45, 47, 50, 52, 55, 53, 57, 60, 62, 65, 67, 68, 70],
                         borderColor: 'rgba(255, 99, 132, 1)',
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         fill: true
                     }, {
                         label: 'PM10',
-                        data: [40, 60, 80, 70, 90, 110, 100],
+                        data: [40, 45, 42, 44, 47, 49, 48, 50, 53, 55, 57, 60, 62, 65, 67, 70, 72, 74, 75, 78, 80, 82, 85, 87],
                         borderColor: 'rgba(54, 162, 235, 1)',
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
                         fill: true
                     }, {
                         label: 'CO',
-                        data: [10, 20, 30, 25, 35, 45, 40],
+                        data: [10, 12, 11, 13, 14, 15, 16, 17, 19, 18, 20, 21, 23, 25, 24, 26, 27, 28, 30, 31, 33, 32, 34, 35],
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         fill: true
@@ -300,7 +299,7 @@
                             display: true,
                             title: {
                                 display: true,
-                                text: 'Days'
+                                text: 'Hours'
                             }
                         },
                         y: {
@@ -313,9 +312,11 @@
                     }
                 }
             });
+
         });
 
         var currentLoc = 1;
+
         function selectLocation(selected) {
             var token = $("meta[name='csrf-token']").attr("content");
             var value = selected.value;
@@ -360,8 +361,7 @@
 
         var channel = pusher.subscribe('telemetry');
         channel.bind("App\\Events\\TelemetryEvent", function(data) {
-            if(data.telemetry.id_device == currentLoc)
-            {
+            if (data.telemetry.id_device == currentLoc) {
                 document.getElementById("pm1-value").innerHTML = data.telemetry.pm_1_0_level;
                 document.getElementById("pm25-value").innerHTML = data.telemetry.pm_2_5_level;
                 document.getElementById("pm10-value").innerHTML = data.telemetry.pm_10_0_level;
@@ -381,8 +381,9 @@
 
             console.log("Device: " + data.telemetry.id_device);
         });
-
     </script>
+
+    
 </body>
 
 </html>

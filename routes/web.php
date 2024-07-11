@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\NotifController;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,10 +18,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [MainController::class, 'index']);
 Route::get('/airmap', [MainController::class, 'airmap']);
-Route::get('/average-readings', [MainController::class, 'getAverageReadings']);
+
+// Route::get('/average-readings', [MainController::class, 'getAverageReadings']);
 
 Route::get('/test-mqtt', function () {
     return view('test.mqtt');
+});
+
+Route::get('/overview', function () {
+    return view('overview');
 });
 
 Route::get('/airmap', [MainController::class, 'airmap']);
@@ -28,10 +35,10 @@ Route::get('/breathecare', function () {
     return view('breathecare');
 });
 
-// Route::get('/notification', function () {
-//     return view('notification');
-// });
 
 Route::get('/faq', function () {
     return view('faq');
 });
+
+Route::get('/overview', [NotifController::class, 'checkAirQuality'])->name('overview');
+
