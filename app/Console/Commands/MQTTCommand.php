@@ -76,7 +76,6 @@ class MQTTCommand extends Command
 
             // Dispatch event.
             TelemetryEvent::dispatch($insert);
-
         }, 1);
 
         $mqtt->loop(true);
