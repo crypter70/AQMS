@@ -101,7 +101,7 @@
             </ul>
 
             <div class="nav-icons ms-auto">
-                <div class="dropdown">
+                <!-- <div class="dropdown">
                     <a href="#" class="nav-icon" id="dropdownNotification" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa-regular fa-bell"></i>
                         <span class="notification-badge">{{ count(session('notifications', [])) }}</span>
@@ -119,7 +119,7 @@
                             </a>
                         </li>
                         @endforeach
-                    </ul>
+                    </ul> -->
                     <a href="/faq" class="nav-icon {{ Request::is('faq') ? 'active' : '' }}">
                         @if(Request::is('faq'))
                         <i class="fa-solid fa-circle-question"></i>

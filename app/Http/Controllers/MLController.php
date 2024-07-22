@@ -25,4 +25,15 @@ class MLController extends Controller
         echo "Calling from Laravel: ";
         print_r($data);
     }
+
+    public function getPredictionData()
+    {
+        $response = Http::post(env('ML_API', '127.0.0.1:6000') . '/predict', [
+            "data_1" => []
+        ]);
+        $data = $response->json();
+
+        return response()->json($data);
+    }
+
 }

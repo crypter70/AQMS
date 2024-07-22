@@ -199,12 +199,12 @@
 
             // Fungsi untuk mendapatkan nama bulan di chart
             function getCurrentMonthName() {
-            const months = [
-                'January', 'February', 'March', 'April', 'May', 'June', 
-                'July', 'August', 'September', 'October', 'November', 'December'
-            ];
-            const now = new Date();
-            return months[now.getMonth()];
+                const months = [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ];
+                const now = new Date();
+                return months[now.getMonth()];
             }
 
             // Update current month
@@ -243,7 +243,7 @@
                     labels: generateLabels(),
                     datasets: [{
                         label: 'PM2.5',
-                        data: [], 
+                        data: [],
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1
@@ -288,6 +288,7 @@
                 chart.update();
             }
 
+            // Dropdown pilih polutan
             $(document).ready(function() {
                 $('.dropdown-item').on('click', function(event) {
                     event.preventDefault();
@@ -315,28 +316,31 @@
             let airQualityForecastChart = new Chart(ctxForecast, {
                 type: 'line',
                 data: {
-                    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    labels: ['PM1.0', 'PM2.5', 'PM10', 'CO'],
                     datasets: [{
-                        label: 'PM2.5',
-                        data: [30, 50, 70, 60, 80, 100, 90],
+                        label: 'Pelesiran',
+                        data: [],
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
                         fill: true,
-                        borderWidth: 1
+                        lineTension: 0.4
                     }, {
-                        label: 'PM10',
-                        data: [40, 60, 80, 70, 90, 110, 100],
+                        label: 'FPTK UPI',
+                        data: [],
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
                         borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
                         fill: true,
-                        borderWidth: 1
+                        lineTension: 0.4
                     }, {
-                        label: 'CO',
-                        data: [10, 20, 30, 25, 35, 45, 40],
+                        label: 'KRU House',
+                        data: [],
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
                         fill: true,
-                        borderWidth: 1
+                        lineTension: 0.4
                     }]
                 },
                 options: {
@@ -350,16 +354,12 @@
                             intersect: false,
                         }
                     },
-                    hover: {
-                        mode: 'nearest',
-                        intersect: true
-                    },
                     scales: {
                         x: {
                             display: true,
                             title: {
                                 display: true,
-                                text: 'Days'
+                                text: 'Pollutants'
                             }
                         },
                         y: {
@@ -371,8 +371,45 @@
                         }
                     }
                 }
-            });
+            };
+            
+            function selectLocation(selected) {
+            var token = $("meta[name='csrf-token']").attr("content");
+            var value = selected.value;
+            $.ajax({
+                type: 'GET',
+                url: 'api/telemetry/get/' + value,
+                data: {
+                    'location': value,
+                    '_token': token
+                },
+                beforeSend: function() {
+                    console.log("Post data.");
+                }
+            }).done(function(response) {
+                document.getElementById("pm1-value").innerHTML = response["data"]["pm_1_0_level"];
+                document.getElementById("pm25-value").innerHTML = response["data"]["pm_2_5_level"];
+                document.getElementById("pm10-value").innerHTML = response["data"]["pm_10_0_level"];
+                document.getElementById("co-value").innerHTML = response["data"]["co_level"];
+                document.getElementById("temperature-value").innerHTML = response["data"]["dht22_temperature"];
+                document.getElementById("humidity-value").innerHTML = response["data"]["dht22_humidity"];
+                document.getElementById("pressure-value").innerHTML = response["data"]["bme280_pressure"];
 
+                document.getElementById("pm25-ispu-value").innerHTML = Math.round(response["ispu"]["pm25"]);
+                document.getElementById("pm10-ispu-value").innerHTML = Math.round(response["ispu"]["pm10"]);
+                document.getElementById("co-ispu-value").innerHTML = Math.round(response["ispu"]["co"]);
+
+                document.getElementById("pm25-category").innerHTML = response["ispu"]["category_pm25"];
+                document.getElementById("pm10-category").innerHTML = response["ispu"]["category_pm10"];
+                document.getElementById("co-category").innerHTML = response["ispu"]["category_co"];
+
+                currentLoc = value;
+            }).fail(function(response) {
+                console.log("Not sent: " + response);
+            });
+        }
+
+        );
         });
 
         var currentLoc = 1;
