@@ -39,22 +39,30 @@ class PredictionRequest(BaseModel):
     data_7: List[float]  
     data_8: List[float]  
     data_9: List[float]  
+    data_10: List[float]  
+    data_11: List[float]  
+    data_12: List[float]  
 
 class PredictionResponse(BaseModel):
-    predicted_values: Dict[str, List[float]]
+    # predicted_values: Dict[str, List[float]]
+    # # predicted_values: float
+    predicted_values: Dict[str, float]
 
 models = {}
 scalers = {}
 model_paths = {
     0: ('sensor_1_pm1', '../models/sensor_data_1_pm1_lstm_model.pth'),
     1: ('sensor_1_pm25', '../models/sensor_data_1_pm25_lstm_model.pth'),
-    2: ('sensor_1_co', '../models/sensor_data_1_co_lstm_model.pth'),
-    3: ('sensor_2_pm1', '../models/sensor_data_2_pm1_lstm_model.pth'),
-    4: ('sensor_2_pm25', '../models/sensor_data_2_pm25_lstm_model.pth'),
-    5: ('sensor_2_co', '../models/sensor_data_2_co_lstm_model.pth'),
-    6: ('sensor_3_pm1', '../models/sensor_data_3_pm1_lstm_model.pth'),
-    7: ('sensor_3_pm25', '../models/sensor_data_3_pm25_lstm_model.pth'),
-    8: ('sensor_3_co', '../models/sensor_data_3_co_lstm_model.pth')
+    2: ('sensor_1_pm10', '../models/sensor_data_1_pm10_lstm_model.pth'),
+    3: ('sensor_1_co', '../models/sensor_data_1_co_lstm_model.pth'),
+    4: ('sensor_2_pm1', '../models/sensor_data_2_pm1_lstm_model.pth'),
+    5: ('sensor_2_pm25', '../models/sensor_data_2_pm25_lstm_model.pth'),
+    6: ('sensor_2_pm10', '../models/sensor_data_2_pm10_lstm_model.pth'),
+    7: ('sensor_2_co', '../models/sensor_data_2_co_lstm_model.pth'),
+    8: ('sensor_3_pm1', '../models/sensor_data_3_pm1_lstm_model.pth'),
+    9: ('sensor_3_pm25', '../models/sensor_data_3_pm25_lstm_model.pth'),
+    10: ('sensor_3_pm10', '../models/sensor_data_3_pm10_lstm_model.pth'),
+    11: ('sensor_3_co', '../models/sensor_data_3_co_lstm_model.pth'),
 }
 
 # load model dan scaler
@@ -79,7 +87,7 @@ async def predict(aqms_data: PredictionRequest):
     try:
         datas = [aqms_data.data_1, aqms_data.data_2, aqms_data.data_3, aqms_data.data_4,
                  aqms_data.data_5, aqms_data.data_6, aqms_data.data_7, aqms_data.data_8,
-                 aqms_data.data_9]
+                 aqms_data.data_9, aqms_data.data_10, aqms_data.data_11, aqms_data.data_12]
         predictions = {}
 
         for i, data in enumerate(datas):
@@ -94,11 +102,13 @@ async def predict(aqms_data: PredictionRequest):
                 # lakukan prediksi, detach dari komputasi, pindahkan data ke CPU, convert ke numpy array, dan inverse scaling hasil prediksi
                 predicted_value = models[i](scaled_data).detach().cpu().numpy()
                 predicted_value = scalers[i].inverse_transform(predicted_value.reshape(-1, 1))
+                predicted_value = np.mean(predicted_value[:24])
 
-                # return hasil prediksi untuk 7 hari
                 name = model_paths[i][0]
-                predictions[f"predicted_value_{name}"] = predicted_value[:7]
+                # predictions[f"predicted_value_{name}"] = predicted_value[:24]
+                predictions[f"predicted_value_{name}"] = predicted_value
 
+        # return {"predicted_values": predictions}
         return {"predicted_values": predictions}
 
     except Exception as e:
