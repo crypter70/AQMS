@@ -1,6 +1,6 @@
 data_source:
     directory: 'data/raw/'
-    file_name: aqms_raw_data.csv
+    file_name: aqms_raw_data_2.csv
     data_column: 'MESSAGE'
     columns: ['id_sensor', 'datetime', 'pm1', 'pm25', 'pm10', 'co', 'temperature', 'humidity', 'pressure']
 
@@ -9,15 +9,16 @@ data_source:
     int_features: ['id_sensor', 'pm1', 'pm25', 'pm10']
     float_features: ['co', 'temperature', 'humidity', 'pressure']
     
-    data_to_remove: [1002, 3498, 3399, 6546, 6548, 6549, 6551, 6552, 6553]
+    data_to_remove: [1002, 3498, 3399, 6546, 6548, 6549, 6551, 6552, 6553, 93274]
+    # data_to_remove: [1002, 3498, 3399, 6546, 6548, 6549, 6551, 6552, 6553, 93274, 105453, 105454, 105455, 105793, 105794, 107301, 107302, 107304, 107437, 107438, 108637, 108638, 108641]
     id_sensor: 'id_sensor'
     sensor: [1, 2, 3]
 
 
 train_test_data:
     directory: 'data/processed/'
-    file_name_pkl: aqms_data.pkl
-    file_name_csv: aqms_data.csv
+    file_name_pkl: aqms_data_2.pkl
+    file_name_csv: aqms_data_2.csv
 
 
 data_mapping:
