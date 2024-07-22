@@ -425,18 +425,18 @@
                 document.getElementById("pm1-value").innerHTML = data.telemetry.pm_1_0_level;
                 document.getElementById("pm25-value").innerHTML = data.telemetry.pm_2_5_level;
                 document.getElementById("pm10-value").innerHTML = data.telemetry.pm_10_0_level;
-                document.getElementById("co-value").innerHTML = data.telemetry.co_level;
+                document.getElementById("co-value").innerHTML = Math.round(data.telemetry.co_level);
                 document.getElementById("temperature-value").innerHTML = data.telemetry.dht22_temperature;
                 document.getElementById("humidity-value").innerHTML = data.telemetry.dht22_humidity;
                 document.getElementById("pressure-value").innerHTML = data.telemetry.bme280_pressure;
 
-                /* document.getElementById("pm25-ispu-value").innerHTML = Math.round(response["ispu"]["pm25"]);
-                document.getElementById("pm10-ispu-value").innerHTML = Math.round(response["ispu"]["pm10"]);
-                document.getElementById("co-ispu-value").innerHTML = Math.round(response["ispu"]["co"]);
+                document.getElementById("pm25-ispu-value").innerHTML = Math.round(data.telemetry.ispu_pm25);
+                document.getElementById("pm10-ispu-value").innerHTML = Math.round(data.telemetry.ispu_pm10);
+                document.getElementById("co-ispu-value").innerHTML = Math.round(data.telemetry.ispu_co);
 
-                document.getElementById("pm25-category").innerHTML = response["ispu"]["category_pm25"];
-                document.getElementById("pm10-category").innerHTML = response["ispu"]["category_pm10"];
-                document.getElementById("co-category").innerHTML = response["ispu"]["category_co"]; */
+                document.getElementById("pm25-category").innerHTML = data.telemetry.category_ispu_pm25;
+                document.getElementById("pm10-category").innerHTML = data.telemetry.category_ispu_pm10;
+                document.getElementById("co-category").innerHTML = data.telemetry.category_ispu_co;
             }
 
             console.log("Device: " + data.telemetry.id_device);

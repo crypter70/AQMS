@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\TelemetryLog;
+use Flasher\Prime\FlasherInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 class NotifController extends Controller
 {
-    public function checkAirQuality(Request $request)
+    public static function checkAirQuality()
     {
         $latestData = TelemetryLog::latest()->first();
 
@@ -29,9 +30,7 @@ class NotifController extends Controller
 
         if ($category != 'Good') {
             $message = "You are in $category zone.";
-            Session::flash('toastr', $message);
+            return $message;
         }
-
-        return redirect()->back();
     }
 }

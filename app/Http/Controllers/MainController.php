@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Device;
 use App\Models\TelemetryLog;
+use Flasher\Prime\FlasherInterface;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -22,6 +23,7 @@ class MainController extends Controller
         $data = TelemetryLog::where('id_device', $id)->orderBy('time_captured', 'desc')->first();
         $ispu =  ISPUController::get_ispu($id);
 
+        flash()->addWarning(NotifController::checkAirQuality());
         return view('overview', compact('data', 'device', 'ispu'));
     }
 

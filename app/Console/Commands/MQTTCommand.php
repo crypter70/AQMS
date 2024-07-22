@@ -66,12 +66,16 @@ class MQTTCommand extends Command
             $insert['ispu_pm10'] = ISPUController::calculate_ispu($insert['pm_10_0_level'], 'PM10');
             $insert['ispu_co'] = ISPUController::calculate_ispu($insert['co_level'], 'CO');
 
+            // ISPU data.
+            $insert['category_ispu_pm25'] = ISPUController::categorize_ispu($insert['ispu_pm25']);
+            $insert['category_ispu_pm10'] = ISPUController::categorize_ispu($insert['ispu_pm10']);
+            $insert['category_ispu_co'] = ISPUController::categorize_ispu($insert['ispu_co']);
+
             // Insert data to database.
             TelemetryLog::create($insert);
 
             // Dispatch event.
             TelemetryEvent::dispatch($insert);
-
         }, 1);
 
         $mqtt->loop(true);
