@@ -371,49 +371,10 @@
                         }
                     }
                 }
-            };
-            
-            function selectLocation(selected) {
-            var token = $("meta[name='csrf-token']").attr("content");
-            var value = selected.value;
-            $.ajax({
-                type: 'GET',
-                url: 'api/telemetry/get/' + value,
-                data: {
-                    'location': value,
-                    '_token': token
-                },
-                beforeSend: function() {
-                    console.log("Post data.");
-                }
-            }).done(function(response) {
-                document.getElementById("pm1-value").innerHTML = response["data"]["pm_1_0_level"];
-                document.getElementById("pm25-value").innerHTML = response["data"]["pm_2_5_level"];
-                document.getElementById("pm10-value").innerHTML = response["data"]["pm_10_0_level"];
-                document.getElementById("co-value").innerHTML = response["data"]["co_level"];
-                document.getElementById("temperature-value").innerHTML = response["data"]["dht22_temperature"];
-                document.getElementById("humidity-value").innerHTML = response["data"]["dht22_humidity"];
-                document.getElementById("pressure-value").innerHTML = response["data"]["bme280_pressure"];
-
-                document.getElementById("pm25-ispu-value").innerHTML = Math.round(response["ispu"]["pm25"]);
-                document.getElementById("pm10-ispu-value").innerHTML = Math.round(response["ispu"]["pm10"]);
-                document.getElementById("co-ispu-value").innerHTML = Math.round(response["ispu"]["co"]);
-
-                document.getElementById("pm25-category").innerHTML = response["ispu"]["category_pm25"];
-                document.getElementById("pm10-category").innerHTML = response["ispu"]["category_pm10"];
-                document.getElementById("co-category").innerHTML = response["ispu"]["category_co"];
-
-                currentLoc = value;
-            }).fail(function(response) {
-                console.log("Not sent: " + response);
             });
-        }
-
-        );
         });
 
         var currentLoc = 1;
-
         function selectLocation(selected) {
             var token = $("meta[name='csrf-token']").attr("content");
             var value = selected.value;

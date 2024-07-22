@@ -22,6 +22,7 @@ class MainController extends Controller
         $device = Device::all();
         $data = TelemetryLog::where('id_device', $id)->orderBy('time_captured', 'desc')->first();
         $ispu =  ISPUController::get_ispu($id);
+        // $predict = GetPredictionData(dari database, bukan dari ML).
 
         flash()->addWarning(NotifController::checkAirQuality());
         return view('overview', compact('data', 'device', 'ispu'));
