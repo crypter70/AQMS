@@ -51,17 +51,5 @@ class MainController extends Controller
         return view('airmap', compact('devices', 'ispu'));
     }
 
-    /* private function getNotifications($value, $type)
-    {
-        $category = $this->getCategory($value, $type);
-        $notifications = [];
-
-        if ($category == 'Unhealthy' || $category == 'Very Unhealthy' || $category == 'Hazardous') {
-            $notifications[] = "Warning: You are in a $category zone!";
-        }
-
-        return $notifications;
-    } */
-
     
 }

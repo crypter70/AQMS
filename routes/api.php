@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\TelemetryLogController;
+use App\Http\Controllers\ISPUController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +24,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('telemetry/get/{data}', [TelemetryLogController::class, 'get'])->name('telemetry_logs.get');
 Route::post('telemetry/store', [TelemetryLogController::class, 'store'])->name('telemetry_logs.store');
+Route::get('telemetry/getAverageISPUperDay', [ISPUController::class, 'getAverageISPUperDay']);

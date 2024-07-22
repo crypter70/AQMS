@@ -78,7 +78,7 @@
                             </div>
                         </div>
                         <canvas id="chartCanvas" width="auto" height="auto"></canvas>
-                        <p class="card-text">July</p>
+                        <p class="card-text" id="current-month"></p>
                     </div>
                 </div>
             </div>
@@ -191,12 +191,24 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('chartCanvas').getContext('2d');
             const ctxForecast = document.getElementById('airQualityForecastChart').getContext('2d');
+
+            // Fungsi untuk mendapatkan nama bulan di chart
+            function getCurrentMonthName() {
+            const months = [
+                'January', 'February', 'March', 'April', 'May', 'June', 
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            const now = new Date();
+            return months[now.getMonth()];
+            }
+
+            // Update current month
+            document.getElementById('current-month').textContent = getCurrentMonthName();
 
             // Real-time display
             function updateDateTime() {
@@ -209,14 +221,29 @@
             setInterval(updateDateTime, 1000);
             updateDateTime();
 
-            // Inisialisasi chart pertama (Bar chart)
+            // Fungsi untuk menghasilkan label hari dinamis
+            function generateLabels() {
+                const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const today = new Date();
+                const labels = [];
+
+                for (let i = 0; i < 7; i++) {
+                    const day = new Date(today);
+                    day.setDate(today.getDate() + i);
+                    labels.push(daysOfWeek[day.getDay()]);
+                }
+
+                return labels;
+            }
+
+            // Inisialisasi chart pertama kali
             let chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: generateLabels(),
                     datasets: [{
                         label: 'PM2.5',
-                        data: [10, 60, 80, 75, 66, 32, 20],
+                        data: [], 
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 1
@@ -231,24 +258,54 @@
                 }
             });
 
-            // Fungsi untuk memperbarui data chart
-            function updateChart(chart, type) {
-                const dataSets = {
-                    pm25: [10, 60, 80, 75, 66, 32, 20],
-                    pm10: [10, 50, 20, 15, 40, 52, 10],
-                    co: [10, 20, 30, 25, 35, 45, 40],
-                };
+            // get data untuk chart Average ISPU score
+            async function fetchDataAndRenderChart(type) {
+                try {
+                    const response = await $.ajax({
+                        url: 'api/telemetry/getAverageISPUperDay',
+                        method: 'GET',
+                        dataType: 'json'
+                    });
 
-                chart.data.datasets[0].data = dataSets[type];
+                    const labels = generateLabels();
+                    const dataSets = {
+                        pm25: response.map(item => item.pm25),
+                        pm10: response.map(item => item.pm10),
+                        co: response.map(item => item.co),
+                    };
+
+                    updateChart(chart, type, labels, dataSets[type]);
+                } catch (err) {
+                    console.error('Error fetching data:', err);
+                }
+            }
+
+            // Update chart Average ISPU Score
+            function updateChart(chart, type, labels, data) {
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = data;
                 chart.data.datasets[0].label = type.toUpperCase();
                 chart.update();
             }
+
+            $(document).ready(function() {
+                $('.dropdown-item').on('click', function(event) {
+                    event.preventDefault();
+                    const chartType = $(this).data('chart');
+                    fetchDataAndRenderChart(chartType);
+                    $('.dropdown-toggle').text($(this).text());
+                });
+
+                // Fetch data 
+                fetchDataAndRenderChart('pm25');
+            });
 
             // Event listener untuk dropdown
             document.querySelectorAll('.dropdown-item').forEach(item => {
                 item.addEventListener('click', function(event) {
                     event.preventDefault();
                     const chartType = this.dataset.chart;
+                    fetchDataAndRenderChart(chartType);
                     updateChart(chart, chartType);
                     document.querySelector('.dropdown-toggle').textContent = this.textContent;
                 });
@@ -258,25 +315,28 @@
             let airQualityForecastChart = new Chart(ctxForecast, {
                 type: 'line',
                 data: {
-                    labels: Array.from({length: 24}, (v, i) => `${i}:00`),
+                    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                     datasets: [{
                         label: 'PM2.5',
-                        data: [30, 35, 32, 33, 36, 38, 37, 40, 42, 41, 43, 45, 47, 50, 52, 55, 53, 57, 60, 62, 65, 67, 68, 70],
-                        borderColor: 'rgba(255, 99, 132, 1)',
+                        data: [30, 50, 70, 60, 80, 100, 90],
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        fill: true
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        fill: true,
+                        borderWidth: 1
                     }, {
                         label: 'PM10',
-                        data: [40, 45, 42, 44, 47, 49, 48, 50, 53, 55, 57, 60, 62, 65, 67, 70, 72, 74, 75, 78, 80, 82, 85, 87],
-                        borderColor: 'rgba(54, 162, 235, 1)',
+                        data: [40, 60, 80, 70, 90, 110, 100],
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        fill: true
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        fill: true,
+                        borderWidth: 1
                     }, {
                         label: 'CO',
-                        data: [10, 12, 11, 13, 14, 15, 16, 17, 19, 18, 20, 21, 23, 25, 24, 26, 27, 28, 30, 31, 33, 32, 34, 35],
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        data: [10, 20, 30, 25, 35, 45, 40],
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        fill: true
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: true,
+                        borderWidth: 1
                     }]
                 },
                 options: {
@@ -299,7 +359,7 @@
                             display: true,
                             title: {
                                 display: true,
-                                text: 'Hours'
+                                text: 'Days'
                             }
                         },
                         y: {
@@ -382,8 +442,6 @@
             console.log("Device: " + data.telemetry.id_device);
         });
     </script>
-
-    
 </body>
 
 </html>

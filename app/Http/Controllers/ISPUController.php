@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\DB;
 
 class ISPUController extends Controller
 {
@@ -33,21 +33,24 @@ class ISPUController extends Controller
         $ispu['category_pm10'] = ISPUController::categorize_ispu($ispu['pm10']);
         $ispu['category_co'] = ISPUController::categorize_ispu($ispu['co']);
 
-
-        // Dapatkan kategori notifikasi
-        /* $notifications = $this->getNotifications($ispu['pm25'], 'PM2.5');
-        $notifications = array_merge($notifications, $this->getNotifications($ispu['pm10'], 'PM10'));
-        $notifications = array_merge($notifications, $this->getNotifications($ispu['co'], 'CO')); */
-
-        /* return response()->json([
-            'pm2_5' => $ispuPM25,
-            'pm10' => $ispuPM10,
-            'co' => $ispuCO,
-            'notifications' => $notifications,
-        ]); */
-
         return $ispu;
     }
+
+    public function getAverageISPUperDay()
+    {
+        $data = TelemetryLog::select(
+            DB::raw("DATE_FORMAT(created_at, '%a') as day"),
+            DB::raw("AVG(ispu_pm25) as pm25"),
+            DB::raw("AVG(ispu_pm10) as pm10"),
+            DB::raw("AVG(ispu_co) as co")
+        )
+            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%a')"))
+            ->orderByRaw("FIELD(DATE_FORMAT(created_at, '%a'), 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')")
+            ->get();
+
+        return response()->json($data);
+    }
+
 
     // I = ((Ia - Ib) / (Xa - Xb)) * (Xx - Xb) + Ib.
     public static function calculate_ispu($xx, $type)
@@ -60,42 +63,32 @@ class ISPUController extends Controller
         $xa = 1;
         $xb = 1;
 
-        switch ($type)
-        {
+        switch ($type) {
             case 'PM2.5':
-                if ($xx <= 15.5)
-                {
+                if ($xx <= 15.5) {
                     $ia = 50;
                     $ib = $xb = 0;
 
                     $xa = 15.5;
-                }
-                else if ($xx > 15.5 && $xx <= 55.4)
-                {
+                } else if ($xx > 15.5 && $xx <= 55.4) {
                     $ia = 100;
                     $ib = 50;
-                    
+
                     $xa = 55.4;
                     $xb = 15.5;
-                }
-                else if ($xx > 55.4 && $xx <= 150.4)
-                {
+                } else if ($xx > 55.4 && $xx <= 150.4) {
                     $ia = 200;
                     $ib = 100;
 
                     $xa = 150.4;
                     $xb = 55.4;
-                }
-                else if ($xx > 150.4 && $xx <= 250.4)
-                {
+                } else if ($xx > 150.4 && $xx <= 250.4) {
                     $ia = 300;
                     $ib = 200;
 
                     $xa = 250.4;
                     $xb = 150.4;
-                }
-                else if ($xx > 250.4 && $xx <= 500)
-                {
+                } else if ($xx > 250.4 && $xx <= 500) {
                     $ia = 400;
                     $ib = 300;
 
@@ -104,38 +97,29 @@ class ISPUController extends Controller
                 }
 
                 break;
-            
+
             case 'PM10':
-                if ($xx <= 50)
-                {
+                if ($xx <= 50) {
                     $ia = $xa = 50;
                     $ib = $xb = 0;
-                }
-                else if ($xx > 50 && $xx <= 150)
-                {
+                } else if ($xx > 50 && $xx <= 150) {
                     $ia = 100;
                     $ib = $xb = 50;
-                    
+
                     $xa = 150;
-                }
-                else if ($xx > 150 && $xx <= 350)
-                {
+                } else if ($xx > 150 && $xx <= 350) {
                     $ia = 200;
                     $ib = 100;
 
                     $xa = 350;
                     $xb = 150;
-                }
-                else if ($xx > 350 && $xx <= 420)
-                {
+                } else if ($xx > 350 && $xx <= 420) {
                     $ia = 300;
                     $ib = 200;
 
                     $xa = 420;
                     $xb = 350;
-                }
-                else if ($xx > 420 && $xx <= 500)
-                {
+                } else if ($xx > 420 && $xx <= 500) {
                     $ia = 400;
                     $ib = 300;
 
@@ -144,41 +128,32 @@ class ISPUController extends Controller
                 }
 
                 break;
-            
+
             case 'CO':
-                if ($xx <= 4000)
-                {
+                if ($xx <= 4000) {
                     $ia = 50;
                     $ib = $xb = 0;
 
                     $xa = 4000;
-                }
-                else if ($xx > 4000 && $xx <= 8000)
-                {
+                } else if ($xx > 4000 && $xx <= 8000) {
                     $ia = 100;
                     $ib = 50;
-                    
+
                     $xa = 8000;
                     $xb = 4000;
-                }
-                else if ($xx > 8000 && $xx <= 15000)
-                {
+                } else if ($xx > 8000 && $xx <= 15000) {
                     $ia = 200;
                     $ib = 100;
 
                     $xa = 15000;
                     $xb = 8000;
-                }
-                else if ($xx > 15000 && $xx <= 30000)
-                {
+                } else if ($xx > 15000 && $xx <= 30000) {
                     $ia = 300;
                     $ib = 200;
 
                     $xa = 30000;
                     $xb = 15000;
-                }
-                else if ($xx > 30000 && $xx <= 45000)
-                {
+                } else if ($xx > 30000 && $xx <= 45000) {
                     $ia = 400;
                     $ib = 300;
 
@@ -199,24 +174,15 @@ class ISPUController extends Controller
 
     public static function categorize_ispu($value)
     {
-        if ($value <= 50)
-        {
+        if ($value <= 50) {
             return 'Good';
-        }
-        else if ($value <= 100)
-        {
+        } else if ($value <= 100) {
             return 'Moderate';
-        }
-        else if ($value <= 200)
-        {
+        } else if ($value <= 200) {
             return 'Unhealthy';
-        }
-        else if ($value <= 300)
-        {
+        } else if ($value <= 300) {
             return 'Very Unhealthy';
-        }
-        else
-        {
+        } else {
             return 'Hazardous';
         }
     }
@@ -259,8 +225,4 @@ class ISPUController extends Controller
 
         return redirect()->back(); // Redirect ke halaman sebelumnya atau halaman lain
     }
-
-    
-    
-    
 }
