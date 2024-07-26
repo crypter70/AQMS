@@ -2,6 +2,7 @@ import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sklearn.preprocessing import StandardScaler
+import pandas as pd
 
 import torch
 import torch.nn as nn
@@ -44,9 +45,9 @@ class PredictionRequest(BaseModel):
     data_12: List[float]  
 
 class PredictionResponse(BaseModel):
-    # predicted_values: Dict[str, List[float]]
-    # # predicted_values: float
-    predicted_values: Dict[str, float]
+    predicted_values: Dict[str, List[float]]
+    # predicted_values: float
+    # predicted_values: Dict[str, float]
 
 models = {}
 scalers = {}
@@ -102,11 +103,13 @@ async def predict(aqms_data: PredictionRequest):
                 # lakukan prediksi, detach dari komputasi, pindahkan data ke CPU, convert ke numpy array, dan inverse scaling hasil prediksi
                 predicted_value = models[i](scaled_data).detach().cpu().numpy()
                 predicted_value = scalers[i].inverse_transform(predicted_value.reshape(-1, 1))
-                predicted_value = np.mean(predicted_value[:24])
+                predicted_value_array = np.array(predicted_value)
+                average_values = np.mean(predicted_value_array.reshape(-1, 24), axis=1)
+
 
                 name = model_paths[i][0]
                 # predictions[f"predicted_value_{name}"] = predicted_value[:24]
-                predictions[f"predicted_value_{name}"] = predicted_value
+                predictions[f"predicted_value_{name}"] = average_values
 
         # return {"predicted_values": predictions}
         return {"predicted_values": predictions}
