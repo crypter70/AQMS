@@ -24,11 +24,11 @@
                     <div>
                         <h2 class="section-title-ispu mt-3">ISPU Score
                             <i class="fa-solid fa-circle-info" title="This is the ISPU (Indeks Standar Pencemaran Udara) Score which indicates the level of air pollution. 
-                            1-50    = Good
-                            51-100  = Moderate
-                            101-200 = Unhealthy 
-                            201-300 = Very Unhealthy 
-                            ≥ 301   = Hazardous
+                            1-50    = Good (Baik)
+                            51-100  = Moderate (Sedang)
+                            101-200 = Unhealthy (Tidak Sehat)
+                            201-300 = Very Unhealthy (Sangat Tidak Sehat)
+                            ≥ 301   = Hazardous (Berbahaya)
                             "></i>
                         </h2>
                         <p class="card-text mb-0"><i class="fa-solid fa-location-dot"></i>
@@ -178,10 +178,17 @@
     <section class="container mt-5 mb-5">
         <h4 class="section-title-out mt-4 mb-4">Air Quality Forecast</h4>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
-                        <canvas id="airQualityForecastChart" width="400" height="200"></canvas>
+                        <canvas id="airQualityForecastChartPM" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <canvas id="airQualityForecastChartCO" width="400" height="200"></canvas>
                     </div>
                 </div>
             </div>
@@ -195,7 +202,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('chartCanvas').getContext('2d');
-            const ctxForecast = document.getElementById('airQualityForecastChart').getContext('2d');
+            const ctxForecastPM = document.getElementById('airQualityForecastChartPM').getContext('2d');
+            const ctxForecastCO = document.getElementById('airQualityForecastChartCO').getContext('2d');
 
             // Fungsi untuk mendapatkan nama bulan di chart
             function getCurrentMonthName() {
@@ -236,7 +244,7 @@
                 return labels;
             }
 
-            // Inisialisasi chart pertama kali
+            // Inisialisasi chart pertama 
             let chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -312,66 +320,109 @@
                 });
             });
 
-            // Inisialisasi chart kedua (Line chart untuk forecast)
-            let airQualityForecastChart = new Chart(ctxForecast, {
-                type: 'line',
-                data: {
-                    labels: ['PM1.0', 'PM2.5', 'PM10', 'CO'],
-                    datasets: [{
-                        label: 'Pelesiran',
-                        data: [],
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1,
-                        fill: true,
-                        lineTension: 0.4
-                    }, {
-                        label: 'FPTK UPI',
-                        data: [],
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1,
-                        fill: true,
-                        lineTension: 0.4
-                    }, {
-                        label: 'KRU House',
-                        data: [],
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1,
-                        fill: true,
-                        lineTension: 0.4
-                    }]
+
+            // Inisialisasi chart kedua (Line chart untuk forecast PM)
+            let airQualityForecastChartPM = new Chart(ctxForecastPM, {
+            type: 'line',
+            data: {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                datasets: [{
+                    label: 'PM1.0',
+                    data: [20, 50, 60, 45, 55, 40, 65],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    lineTension: 0.4
+                }, {
+                    label: 'PM2.5',
+                    data: [10, 55, 33, 20, 25, 30, 35],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    lineTension: 0.4
+                }, {
+                    label: 'PM10',
+                    data: [70, 40, 50, 10, 20, 30, 40],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    lineTension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
                 },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Days',
                         }
                     },
-                    scales: {
-                        x: {
+                    y: {
+                        display: true,
+                        title: {
                             display: true,
-                            title: {
-                                display: true,
-                                text: 'Pollutants'
-                            }
-                        },
-                        y: {
-                            display: true,
-                            title: {
-                                display: true,
-                                text: 'Air Quality Index'
-                            }
+                            text: 'Air Quality Index (µg/m³)'
                         }
                     }
                 }
-            });
+            }
+        });
+
+        // Inisialisasi chart kedua (Line chart untuk forecast CO)
+        let airQualityForecastChartCO = new Chart(ctxForecastCO, {
+            type: 'line',
+            data: {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                datasets: [{
+                    label: 'CO',
+                    data: [8000, 5000, 13000, 12000, 9000, 7000, 6000],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    lineTension: 0.4
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Days',
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Air Quality Index (µg/m³)'
+                        }
+                    }
+                }
+            }
+        });
+            
         });
 
         var currentLoc = 1;

@@ -186,43 +186,4 @@ class ISPUController extends Controller
             return 'Hazardous';
         }
     }
-
-    public function checkAirQuality(Request $request)
-    {
-        // Ambil data kualitas udara terbaru dari TelemetryLog
-        $latestTelemetryLog = TelemetryLog::latest()->first();
-
-        if ($latestTelemetryLog) {
-            // Dapatkan nilai AQI dari TelemetryLog 
-            $ispu = $latestTelemetryLog->ispu;
-            $category = self::categorize_ispu($ispu);
-
-            $message = '';
-            switch ($category) {
-                case 'Unhealthy':
-                    $message = 'Udara di lokasi Anda tidak sehat.';
-                    break;
-                case 'Very Unhealthy':
-                    $message = 'Udara di lokasi Anda sangat tidak sehat.';
-                    break;
-                case 'Hazardous':
-                    $message = 'Udara di lokasi Anda berbahaya.';
-                    break;
-            }
-
-            if ($category == 'Unhealthy' || $category == 'Very Unhealthy' || $category == 'Hazardous') {
-                $notifications = session('notifications', []);
-                $notifications[] = [
-                    'message' => $message,
-                    'timestamp' => now()->diffForHumans()
-                ];
-
-                // Set pesan notifikasi ke session untuk Toastr dan dropdown menu
-                Session::flash('toastr', $message);
-                Session::put('notifications', $notifications);
-            }
-        }
-
-        return redirect()->back(); // Redirect ke halaman sebelumnya atau halaman lain
-    }
 }

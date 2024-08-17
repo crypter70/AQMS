@@ -28,7 +28,7 @@ class NotifController extends Controller
             $category = 'Hazardous';
         }
 
-        if ($category != 'Good') {
+        if ($category != 'Good' && 'Moderate') {
             $message = "You are in $category zone.";
             return $message;
         }

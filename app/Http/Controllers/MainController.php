@@ -7,6 +7,7 @@ use App\Models\TelemetryLog;
 use Flasher\Prime\FlasherInterface;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class MainController extends Controller
 {
@@ -22,7 +23,7 @@ class MainController extends Controller
         $device = Device::all();
         $data = TelemetryLog::where('id_device', $id)->orderBy('time_captured', 'desc')->first();
         $ispu =  ISPUController::get_ispu($id);
-        // $predict = GetPredictionData(dari database, bukan dari ML).
+        $predict = DB::table('telemetry_logs')->where('time_captured', '=', Carbon::now()->subHours(168))->get();
 
         flash()->addWarning(NotifController::checkAirQuality());
         return view('overview', compact('data', 'device', 'ispu'));

@@ -27,4 +27,5 @@ Route::get('telemetry/get/{data}', [TelemetryLogController::class, 'get'])->name
 Route::post('telemetry/store', [TelemetryLogController::class, 'store'])->name('telemetry_logs.store');
 Route::get('telemetry/getAverageISPUperDay', [ISPUController::class, 'getAverageISPUperDay']);
 Route::get('telemetry/getAverageISPUperDay', [ISPUController::class, 'getAverageISPUperDay']);
-Route::get('/prediction-data', [MLController::class, 'getPredictionData']);
+Route::get('/prediction-get', [MLController::class, 'get']);
+Route::get('/prediction-result', [MLController::class, 'getPredictionResult']);

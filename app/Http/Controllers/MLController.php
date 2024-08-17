@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PredictDataRequest;
 use App\Models\TelemetryLog;
+use App\Models\PredictionLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,8 @@ class MLController extends Controller
     {
         $response = Http::get(env('ML_API', '127.0.0.1:6000') . '/');
         $posts = $response->json();
+
+        return response()->json($response);
     }
 
     public function predict(PredictDataRequest $request)
@@ -27,33 +30,11 @@ class MLController extends Controller
 
         echo "Calling from Laravel: ";
         print_r($data);
+
+        return response()->json($data);
     }
 
     public function getPredictionResult()
-    {
-        $loc_1 = TelemetryLog::where("id_device", "=", "1");   
-        $loc_2 = TelemetryLog::where("id_device", "=", "2");
-        $loc_3 = TelemetryLog::where("id_device", "=", "3");
-        
-        $response = Http::post(env('ML_API', '127.0.0.1:6000') . '/predict', [
-            "data_1" => [],
-            "data_2" => [],
-            "data_3" => [],
-            "data_4" => [],
-            "data_5" => [],
-            "data_6" => [],
-            "data_7" => [],
-            "data_8" => [],
-            "data_9" => [],
-            "data_10" => [],
-            "data_11" => [],
-            "data_12" => [],
-        ]);
-
-        return response()->json($response);
-    }
-
-    public function getPredictionData()
     {
         $loc_1 = $this->getEloquent('1');
         $loc_2 = $this->getEloquent('2');
@@ -81,42 +62,45 @@ class MLController extends Controller
         }
 
         $data = [
-            "data_1" => $data_1,
-            "data_2" => $data_2,
-            "data_3" => $data_3,
-            "data_4" => $data_4,
-            "data_5" => $data_5,
-            "data_6" => $data_6,
-            "data_7" => $data_7,
-            "data_8" => $data_8,
-            "data_9" => $data_9,
-            "data_10" => $data_10,
-            "data_11" => $data_11,
-            "data_12" => $data_12,
+            "data_1" => array_map("intval", $data_1),
+            "data_2" => array_map("intval", $data_2),
+            "data_3" => array_map("intval", $data_3),
+            "data_4" => array_map("intval", $data_4),
+            "data_5" => array_map("intval", $data_5),
+            "data_6" => array_map("intval", $data_6),
+            "data_7" => array_map("intval", $data_7),
+            "data_8" => array_map("intval", $data_8),
+            "data_9" => array_map("intval", $data_9),
+            "data_10" => array_map("intval", $data_10),
+            "data_11" => array_map("intval", $data_11),
+            "data_12" => array_map("intval", $data_12),
         ];
+        
+        $response = Http::post(env('ML_API', '127.0.0.1:6000') . '/predict', $data);
+        $responseData = $response->json();
 
-        // $response = Http::post(env('ML_API', '127.0.0.1:6000') . '/predict', $data); */
-        return response()->json($data);
+        return response()->json($responseData);
+        // return view('overview', compact('responseData'));
     }
 
     public function getEloquent($id_device)
     {
-        $timelimit = Carbon::now()->subHours(50);
-        /* return TelemetryLog::select(
-            DB::raw('DATE(time_captured) as day'),
-            DB::raw('HOUR(time_captured) as hour'),
-            DB::raw('AVG(pm_1_0_level) as pm1'),
-            DB::raw('AVG(pm_2_5_level) as pm25'),
-            DB::raw('AVG(pm_10_0_level) as pm10'),
-            DB::raw('AVG(co_level) as co'))
-                ->where('id_device', '=', $id_device)
-                ->where('time_captured', '>=', $timelimit)
-                ->groupBy(DB::raw('DATE(time_captured)'), DB::raw('HOUR(time_captured)'))
-                ->orderBy('day')
-                ->orderBy('hour')
-                ->get(); */
+        $timelimit = Carbon::now()->subHours(168);
+        // return TelemetryLog::select(
+        //     DB::raw('DATE(time_captured) as day'),
+        //     DB::raw('HOUR(time_captured) as hour'),
+        //     DB::raw('AVG(pm_1_0_level) as pm1'),
+        //     DB::raw('AVG(pm_2_5_level) as pm25'),
+        //     DB::raw('AVG(pm_10_0_level) as pm10'),
+        //     DB::raw('AVG(co_level) as co'))
+        //         ->where('id_device', '=', $id_device)
+        //         ->where('time_captured', '>=', $timelimit)
+        //         ->groupBy(DB::raw('DATE(time_captured)'), DB::raw('HOUR(time_captured)'))
+        //         ->orderBy('day')
+        //         ->orderBy('hour')
+        //         ->get();  
 
-        return TelemetryLog::select(
+       return TelemetryLog::select(
             DB::raw('DATE(time_captured) as day'),
             DB::raw('HOUR(time_captured) as hour'),
             DB::raw('AVG(pm_1_0_level) as pm1'),
@@ -124,10 +108,9 @@ class MLController extends Controller
             DB::raw('AVG(pm_10_0_level) as pm10'),
             DB::raw('AVG(co_level) as co'))
                 ->where('id_device', '=', $id_device)
-                ->where('time_captured', '>=', "2024-07-09 00:00:00")
+                ->where('time_captured', '>=', "2024-07-02 00:00:00")
                 ->groupBy(DB::raw('DATE(time_captured)'), DB::raw('HOUR(time_captured)'))
-                ->orderBy('day')
-                ->orderBy('hour')
+                ->take(168)
                 ->get();
     }
 }
