@@ -99,7 +99,7 @@
             "Google Terrain": google_terrain,
         };
 
-        var map = L.map('map').setView([-6.967512300523178, 107.65906856904034], 15);
+        var map = L.map('map').setView([-6.920378544188283, 107.60651489414], 13);
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'

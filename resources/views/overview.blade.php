@@ -25,7 +25,7 @@
                         <h2 class="section-title-ispu mt-3">ISPU Score
                             <i class="fa-solid fa-circle-info" title="This is the ISPU (Indeks Standar Pencemaran Udara) Score which indicates the level of air pollution. 
                             1-50    = Good (Baik)
-                            51-100  = Moderate (Sedang)
+                            51-100  = Moderate (Sedang)                                                                                                                                                                                                 dang)
                             101-200 = Unhealthy (Tidak Sehat)
                             201-300 = Very Unhealthy (Sangat Tidak Sehat)
                             ≥ 301   = Hazardous (Berbahaya)
@@ -200,149 +200,151 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://js.pusher.com/3.1/pusher.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('chartCanvas').getContext('2d');
-            const ctxForecastPM = document.getElementById('airQualityForecastChartPM').getContext('2d');
-            const ctxForecastCO = document.getElementById('airQualityForecastChartCO').getContext('2d');
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        const ctxForecastPM = document.getElementById('airQualityForecastChartPM').getContext('2d');
+        const ctxForecastCO = document.getElementById('airQualityForecastChartCO').getContext('2d');
 
-            // Fungsi untuk mendapatkan nama bulan di chart
-            function getCurrentMonthName() {
-                const months = [
-                    'January', 'February', 'March', 'April', 'May', 'June',
-                    'July', 'August', 'September', 'October', 'November', 'December'
-                ];
-                const now = new Date();
-                return months[now.getMonth()];
+        // Fungsi untuk mendapatkan nama bulan di chart
+        function getCurrentMonthName() {
+            const months = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            const now = new Date();
+            return months[now.getMonth()];
+        }
+
+        // Update current month
+        document.getElementById('current-month').textContent = getCurrentMonthName();
+
+        // Real-time display
+        function updateDateTime() {
+            const dateTimeElement = document.getElementById('date-time');
+            const now = new Date();
+            const formattedDateTime = now.toLocaleString();
+            dateTimeElement.textContent = formattedDateTime;
+        }
+
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Fungsi untuk menghasilkan label hari dinamis
+        function generateLabels() {
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const today = new Date();
+            const labels = [];
+
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(today);
+                day.setDate(today.getDate() + i);
+                labels.push(daysOfWeek[day.getDay()]);
             }
 
-            // Update current month
-            document.getElementById('current-month').textContent = getCurrentMonthName();
+            return labels;
+        }
 
-            // Real-time display
-            function updateDateTime() {
-                const dateTimeElement = document.getElementById('date-time');
-                const now = new Date();
-                const formattedDateTime = now.toLocaleString();
-                dateTimeElement.textContent = formattedDateTime;
-            }
-
-            setInterval(updateDateTime, 1000);
-            updateDateTime();
-
-            // Fungsi untuk menghasilkan label hari dinamis
-            function generateLabels() {
-                const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                const today = new Date();
-                const labels = [];
-
-                for (let i = 0; i < 7; i++) {
-                    const day = new Date(today);
-                    day.setDate(today.getDate() + i);
-                    labels.push(daysOfWeek[day.getDay()]);
-                }
-
-                return labels;
-            }
-
-            // Inisialisasi chart pertama 
-            let chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: generateLabels(),
-                    datasets: [{
-                        label: 'PM2.5',
-                        data: [],
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        // Inisialisasi chart pertama 
+        let chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: generateLabels(),
+                datasets: [{
+                    label: 'PM2.5',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
-
-            // get data untuk chart Average ISPU score
-            async function fetchDataAndRenderChart(type) {
-                try {
-                    const response = await $.ajax({
-                        url: 'api/telemetry/getAverageISPUperDay',
-                        method: 'GET',
-                        dataType: 'json'
-                    });
-
-                    const labels = generateLabels();
-                    const dataSets = {
-                        pm25: response.map(item => item.pm25),
-                        pm10: response.map(item => item.pm10),
-                        co: response.map(item => item.co),
-                    };
-
-                    updateChart(chart, type, labels, dataSets[type]);
-                } catch (err) {
-                    console.error('Error fetching data:', err);
-                }
             }
+        });
 
-            // Update chart Average ISPU Score
-            function updateChart(chart, type, labels, data) {
-                chart.data.labels = labels;
-                chart.data.datasets[0].data = data;
-                chart.data.datasets[0].label = type.toUpperCase();
-                chart.update();
-            }
-
-            // Dropdown pilih polutan
-            $(document).ready(function() {
-                $('.dropdown-item').on('click', function(event) {
-                    event.preventDefault();
-                    const chartType = $(this).data('chart');
-                    fetchDataAndRenderChart(chartType);
-                    $('.dropdown-toggle').text($(this).text());
+        // get data untuk chart Average ISPU score
+        async function fetchDataAndRenderChart(type) {
+            try {
+                const response = await $.ajax({
+                    url: 'api/telemetry/getAverageISPUperDay',
+                    method: 'GET',
+                    dataType: 'json'
                 });
 
-                // Fetch data 
-                fetchDataAndRenderChart('pm25');
+                const labels = generateLabels();
+                const dataSets = {
+                    pm25: response.map(item => item.pm25),
+                    pm10: response.map(item => item.pm10),
+                    co: response.map(item => item.co),
+                };
+
+                updateChart(chart, type, labels, dataSets[type]);
+            } catch (err) {
+                console.error('Error fetching data:', err);
+            }
+        }
+
+        // Update chart Average ISPU Score
+        function updateChart(chart, type, labels, data) {
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = data;
+            chart.data.datasets[0].label = type.toUpperCase();
+            chart.update();
+        }
+
+        // Dropdown pilih polutan
+        $(document).ready(function() {
+            $('.dropdown-item').on('click', function(event) {
+                event.preventDefault();
+                const chartType = $(this).data('chart');
+                fetchDataAndRenderChart(chartType);
+                $('.dropdown-toggle').text($(this).text());
             });
 
-            // Event listener untuk dropdown
-            document.querySelectorAll('.dropdown-item').forEach(item => {
-                item.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const chartType = this.dataset.chart;
-                    fetchDataAndRenderChart(chartType);
-                    updateChart(chart, chartType);
-                    document.querySelector('.dropdown-toggle').textContent = this.textContent;
-                });
+            // Fetch data 
+            fetchDataAndRenderChart('pm25');
+        });
+
+        // Event listener untuk dropdown
+        document.querySelectorAll('.dropdown-item').forEach(item => {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
+                const chartType = this.dataset.chart;
+                fetchDataAndRenderChart(chartType);
+                updateChart(chart, chartType);
+                document.querySelector('.dropdown-toggle').textContent = this.textContent;
             });
+        });
 
+        // Mem-parse data JSON yang dihasilkan oleh Blade template
+        var data = JSON.parse("{!! json_encode($predict['predicted_value_sensor_1_pm1']) !!}");
 
-            // Inisialisasi chart kedua (Line chart untuk forecast PM)
-            let airQualityForecastChartPM = new Chart(ctxForecastPM, {
+        // Inisialisasi chart kedua (Line chart untuk forecast PM)
+        let airQualityForecastChartPM = new Chart(ctxForecastPM, {
             type: 'line',
             data: {
                 labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 datasets: [{
                     label: 'PM1.0',
-                    data: [20, 50, 60, 45, 55, 40, 65],
+                    data: JSON.parse("{!! json_encode($predict['predicted_value_sensor_1_pm1']) !!}"),
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1,
                     lineTension: 0.4
                 }, {
                     label: 'PM2.5',
-                    data: [10, 55, 33, 20, 25, 30, 35],
+                    data: JSON.parse("{!! json_encode($predict['predicted_value_sensor_1_pm25']) !!}"),
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1,
                     lineTension: 0.4
                 }, {
                     label: 'PM10',
-                    data: [70, 40, 50, 10, 20, 30, 40],
+                    data: JSON.parse("{!! json_encode($predict['predicted_value_sensor_1_pm10']) !!}"),
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1,
@@ -379,14 +381,16 @@
             }
         });
 
-        // Inisialisasi chart kedua (Line chart untuk forecast CO)
+        var dataCO = JSON.parse("{!! json_encode($predict['predicted_value_sensor_1_co']) !!}");
+
+        // Inisialisasi chart ketiga (Line chart untuk forecast CO)
         let airQualityForecastChartCO = new Chart(ctxForecastCO, {
             type: 'line',
             data: {
                 labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 datasets: [{
                     label: 'CO',
-                    data: [8000, 5000, 13000, 12000, 9000, 7000, 6000],
+                    data: dataCO,
                     backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     borderWidth: 1,
@@ -422,47 +426,92 @@
                 }
             }
         });
-            
-        });
+    });
 
-        var currentLoc = 1;
-        function selectLocation(selected) {
-            var token = $("meta[name='csrf-token']").attr("content");
-            var value = selected.value;
-            $.ajax({
-                type: 'GET',
-                url: 'api/telemetry/get/' + value,
-                data: {
-                    'location': value,
-                    '_token': token
-                },
-                beforeSend: function() {
-                    console.log("Post data.");
-                }
-            }).done(function(response) {
-                document.getElementById("pm1-value").innerHTML = response["data"]["pm_1_0_level"];
-                document.getElementById("pm25-value").innerHTML = response["data"]["pm_2_5_level"];
-                document.getElementById("pm10-value").innerHTML = response["data"]["pm_10_0_level"];
-                document.getElementById("co-value").innerHTML = response["data"]["co_level"];
-                document.getElementById("temperature-value").innerHTML = response["data"]["dht22_temperature"];
-                document.getElementById("humidity-value").innerHTML = response["data"]["dht22_humidity"];
-                document.getElementById("pressure-value").innerHTML = response["data"]["bme280_pressure"];
+    var currentLoc = 1;
+    function selectLocation(selected) {
+    var token = $("meta[name='csrf-token']").attr("content");
+    var value = selected.value;
 
-                document.getElementById("pm25-ispu-value").innerHTML = Math.round(response["ispu"]["pm25"]);
-                document.getElementById("pm10-ispu-value").innerHTML = Math.round(response["ispu"]["pm10"]);
-                document.getElementById("co-ispu-value").innerHTML = Math.round(response["ispu"]["co"]);
-
-                document.getElementById("pm25-category").innerHTML = response["ispu"]["category_pm25"];
-                document.getElementById("pm10-category").innerHTML = response["ispu"]["category_pm10"];
-                document.getElementById("co-category").innerHTML = response["ispu"]["category_co"];
-
-                currentLoc = value;
-            }).fail(function(response) {
-                console.log("Not sent: " + response);
-            });
+    $.ajax({
+        type: 'GET',
+        url: 'api/telemetry/get/' + value,
+        data: {
+            'location': value,
+            '_token': token
+        },
+        beforeSend: function() {
+            console.log("Fetching data for location:", value);
         }
-    </script>
-    <script>
+    }).done(function(response) {
+        // Update elemen HTML dengan data terbaru
+        document.getElementById("pm1-value").innerHTML = response["data"]["pm_1_0_level"];
+        document.getElementById("pm25-value").innerHTML = response["data"]["pm_2_5_level"];
+        document.getElementById("pm10-value").innerHTML = response["data"]["pm_10_0_level"];
+        document.getElementById("co-value").innerHTML = response["data"]["co_level"];
+        document.getElementById("temperature-value").innerHTML = response["data"]["dht22_temperature"];
+        document.getElementById("humidity-value").innerHTML = response["data"]["dht22_humidity"];
+        document.getElementById("pressure-value").innerHTML = response["data"]["bme280_pressure"];
+
+        document.getElementById("pm25-ispu-value").innerHTML = Math.round(response["ispu"]["pm25"]);
+        document.getElementById("pm10-ispu-value").innerHTML = Math.round(response["ispu"]["pm10"]);
+        document.getElementById("co-ispu-value").innerHTML = Math.round(response["ispu"]["co"]);
+
+        document.getElementById("pm25-category").innerHTML = response["ispu"]["category_pm25"];
+        document.getElementById("pm10-category").innerHTML = response["ispu"]["category_pm10"];
+        document.getElementById("co-category").innerHTML = response["ispu"]["category_co"];
+
+        // Log the raw response data
+        console.log("Response data:", response);
+
+        // Menentukan indeks data berdasarkan lokasi
+        let startIndex;
+        switch (value) {
+            case '1':
+                startIndex = 0; // Lokasi 1
+                break;
+            case '2':
+                startIndex = 4; // Lokasi 2
+                break;
+            case '3':
+                startIndex = 8; // Lokasi 3
+                break;
+            default:
+                startIndex = 0; // Default ke lokasi 1 jika tidak dikenali
+        }
+
+        // Ambil data berdasarkan indeks lokasi
+        const pm1Data = response.slice(startIndex, startIndex + 1);
+        const pm25Data = response.slice(startIndex + 1, startIndex + 2);
+        const pm10Data = response.slice(startIndex + 2, startIndex + 3);
+        const coData = response.slice(startIndex + 3, startIndex + 4);
+
+        // Log extracted data
+        console.log("PM1 Data:", pm1Data);
+        console.log("PM2.5 Data:", pm25Data);
+        console.log("PM10 Data:", pm10Data);
+        console.log("CO Data:", coData);
+
+        // Update grafik dengan data terbaru
+        chart.data.datasets[0].data = pm1Data;
+        chart.update();
+
+        airQualityForecastChartPM.data.datasets[0].data = pm1Data;
+        airQualityForecastChartPM.data.datasets[1].data = pm25Data;
+        airQualityForecastChartPM.data.datasets[2].data = pm10Data;
+        airQualityForecastChartPM.update();
+
+        airQualityForecastChartCO.data.datasets[0].data = coData;
+        airQualityForecastChartCO.update();
+
+        currentLoc = value;
+    }).fail(function(response) {
+        console.error("Failed to fetch data:", response);
+    });
+}
+
+</script>
+<script>
         Pusher.logToConsole = true;
         var pusher = new Pusher('{{ env("PUSHER_APP_KEY") }}', {
             cluster: '{{ env("PUSHER_APP_CLUSTER") }}'

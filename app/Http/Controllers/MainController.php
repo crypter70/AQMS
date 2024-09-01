@@ -23,10 +23,10 @@ class MainController extends Controller
         $device = Device::all();
         $data = TelemetryLog::where('id_device', $id)->orderBy('time_captured', 'desc')->first();
         $ispu =  ISPUController::get_ispu($id);
-        $predict = DB::table('telemetry_logs')->where('time_captured', '=', Carbon::now()->subHours(168))->get();
+        $predict = json_decode(MLController::getPredictionResult()->getContent(), true)["predicted_values"]; 
 
         flash()->addWarning(NotifController::checkAirQuality());
-        return view('overview', compact('data', 'device', 'ispu'));
+        return view('overview', compact('data', 'device', 'ispu', 'predict'));
     }
 
     public function airmap()

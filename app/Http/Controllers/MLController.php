@@ -17,7 +17,7 @@ class MLController extends Controller
         $response = Http::get(env('ML_API', '127.0.0.1:6000') . '/');
         $posts = $response->json();
 
-        return response()->json($response);
+        return response()->json($posts);
     }
 
     public function predict(PredictDataRequest $request)
@@ -34,11 +34,11 @@ class MLController extends Controller
         return response()->json($data);
     }
 
-    public function getPredictionResult()
+    public static function getPredictionResult()
     {
-        $loc_1 = $this->getEloquent('1');
-        $loc_2 = $this->getEloquent('2');
-        $loc_3 = $this->getEloquent('3');
+        $loc_1 = MLController::getEloquent('1');
+        $loc_2 = MLController::getEloquent('2');
+        $loc_3 = MLController::getEloquent('3');
         
         $data_1 = []; $data_2 = []; $data_3 = []; $data_4 = [];
         foreach ($loc_1 as $loc)
@@ -83,7 +83,7 @@ class MLController extends Controller
         // return view('overview', compact('responseData'));
     }
 
-    public function getEloquent($id_device)
+    public static function getEloquent($id_device)
     {
         $timelimit = Carbon::now()->subHours(168);
         // return TelemetryLog::select(
