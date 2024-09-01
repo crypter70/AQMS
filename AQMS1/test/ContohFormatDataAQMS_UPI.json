@@ -1,0 +1,31 @@
+{
+    "ID": "1", 
+    "sensor": {
+        "ZH03B": {
+            "PM1.0": 54,
+            "PM2.5": 67,
+            "PM10.0": 75
+        },
+        "BME280": {
+            "Temperature": 31.67000008,
+            "Pressure": 905.4000244,
+            "Altitude": 918.4933472,
+            "Humidity": 48.37792969
+        },
+        "DHT22": {
+            "Temperature": 23.29999924,
+            "Humidity": 74.5,
+            "HeatIndex": 23.63083267,
+            "DewPoint": 18.52944756,
+            "ComfortRatio": 74.86499786,
+            "ComfortStatus": 8
+        },
+        "MQ7": {
+            "PPM": 7.801222801
+        }
+    },
+    "dateTime": {
+        "date": "2024-05-22",
+        "time": "13:57:41"
+    }
+}
